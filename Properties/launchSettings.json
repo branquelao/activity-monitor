@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "ActivityMonitor (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "ActivityMonitor (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
