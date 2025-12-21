@@ -1,22 +1,19 @@
-﻿using System;
+﻿using Microsoft.UI.Xaml.Data;
+using System;
 using System.Globalization;
-using System.Windows.Data;
 
-namespace SystemMonitorWPF.Services
+namespace ActivityMonitor.Services
 {
     public class HighValueToBoolConverter : IValueConverter
     {
         public double Threshold { get; set; }
 
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object value, Type targetType, object parameter, string language)
         {
-            if (value is double v)
-                return v >= Threshold;
-
-            return false;
+            return value is double v && v >= Threshold;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
             throw new NotImplementedException();
         }

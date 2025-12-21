@@ -1,28 +1,38 @@
-﻿using System;
-using System.Management;
+﻿using ActivityMonitor.Models;
+using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 
-namespace SystemMonitorWpf.Services
+namespace ActivityMonitor.Services
 {
-    public static class MemoryInfo
+    public class MemoryInfo
     {
-        public static (ulong Total, ulong Used, double Percent) GetRam()
+        [StructLayout(LayoutKind.Sequential)]
+        struct MEMORYSTATUSEX
         {
-            var searcher = new ManagementObjectSearcher(
-                "SELECT TotalVisibleMemorySize, FreePhysicalMemory FROM Win32_OperatingSystem");
+            public uint dwLength;
+            public uint dwMemoryLoad;
+            public ulong ullTotalPhys;
+            public ulong ullAvailPhys;
+            public ulong ullTotalPageFile;
+            public ulong ullAvailPageFile;
+            public ulong ullTotalVirtual;
+            public ulong ullAvailVirtual;
+            public ulong ullAvailExtendedVirtual;
+        }
 
-            foreach (ManagementObject obj in searcher.Get())
-            {
-                ulong total = (ulong)obj["TotalVisibleMemorySize"]; // KB
-                ulong free = (ulong)obj["FreePhysicalMemory"];      // KB
+        [DllImport("kernel32.dll")]
+        static extern bool GlobalMemoryStatusEx(ref MEMORYSTATUSEX lpBuffer);
 
-                ulong used = total - free;
-                double percent = (double)used / total * 100.0;
+        public MemoryStatus GetStatus()
+        {
+            var mem = new MEMORYSTATUSEX { dwLength = (uint)Marshal.SizeOf<MEMORYSTATUSEX>() };
+            GlobalMemoryStatusEx(ref mem);
 
-                // convertemos de KB para bytes (x1024)
-                return (total * 1024, used * 1024, percent);
-            }
+            ulong used = mem.ullTotalPhys - mem.ullAvailPhys;
+            double percent = (double)used / mem.ullTotalPhys * 100;
 
-            return (0, 0, 0);
+            return new MemoryStatus(mem.ullTotalPhys, used, percent);
         }
     }
 }

@@ -1,55 +1,38 @@
-﻿using System;
+﻿using ActivityMonitor.Models;
+using Microsoft.UI.Xaml.Controls;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows.Threading;
-using SystemMonitorWpf.Services;
 
-namespace SystemMonitorWPF.ViewModels
+namespace ActivityMonitor.ViewModels
 {
     public class MemoryViewModel : INotifyPropertyChanged
     {
-        private double _ramUsage;
+        private MemoryStatus _status = new(0, 0, 0);
 
-        public double RamUsage
+        public double Percent => _status.Percent;
+        public ulong Total => _status.Total;
+        public ulong Used => _status.Used;
+
+        public string Text => $"Memory: " +
+            $"{Used / 1024 / 1024:F0} / {Total / 1024 / 1024:F0} MB)";
+    
+        public bool IsHigh => Percent >= 80;
+
+        public void Update(MemoryStatus status)
         {
-            get => _ramUsage;
-            set
-            {
-                _ramUsage = value;
-                OnPropertyChanged(nameof(RamUsage));
-                OnPropertyChanged(nameof(RamText));
-            }
-        }
-
-        public string RamText { get; private set; } = "";
-
-        private readonly DispatcherTimer _timer;
-
-        public MemoryViewModel()
-        {
-            _timer = new DispatcherTimer
-            {
-                Interval = TimeSpan.FromSeconds(1)
-            };
-
-            _timer.Tick += (_, _) =>
-            {
-                var ram = MemoryInfo.GetRam();
-                RamUsage = ram.Percent;
-
-                double totalMb = ram.Total / 1024.0 / 1024.0;
-                double usedMb = ram.Used / 1024.0 / 1024.0;
-
-                RamText = $"RAM: {ram.Percent:F2}% ({usedMb:F2} / {totalMb:F2} MB)";
-                OnPropertyChanged(nameof(RamText));
-            };
-
-            _timer.Start();
+            _status = status;
+            OnPropertyChanged(nameof(Percent));
+            OnPropertyChanged(nameof(Text));
+            OnPropertyChanged(nameof(IsHigh));
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
-        protected void OnPropertyChanged(string prop)
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+
+        protected void OnPropertyChanged([CallerMemberName]string? name = null)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }

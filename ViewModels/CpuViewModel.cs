@@ -1,49 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Text;
-using System.Windows.Threading;
-using SystemMonitorWpf.Services;
 
-namespace SystemMonitorWPF.ViewModels
+namespace ActivityMonitor.ViewModels
 {
     public class CpuViewModel : INotifyPropertyChanged
     {
-        private double _cpuUsage;
+        private double _usage;
 
-        public double CpuUsage
+        public double Usage
         {
-            get => _cpuUsage;
+            get => Usage;
             set
             {
-                _cpuUsage = value;
-                OnPropertyChanged(nameof(CpuUsage));
-                OnPropertyChanged(nameof(CpuText));
+                if(_usage != value)
+                {
+                    _usage = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(Text));
+                }
             }
         }
 
-        public string CpuText => $"CPU: {CpuUsage:F2}%";
-
-        private readonly DispatcherTimer _timer;
-
-        public CpuViewModel()
-        {
-            _timer = new DispatcherTimer
-            {
-                Interval = TimeSpan.FromSeconds(1)
-            };
-
-            _timer.Tick += (_, _) =>
-            {
-                CpuUsage = CpuInfo.GetCpuUsage();
-            };
-
-            _timer.Start();
-        }
+        public string Text => $"CPU: {Usage:F2}%";
 
         public event PropertyChangedEventHandler? PropertyChanged;
-        protected void OnPropertyChanged(string prop)
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
-    }
 
+        protected void OnPropertyChanged([CallerMemberName] string? name = null)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    }
 }

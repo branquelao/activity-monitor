@@ -1,43 +1,50 @@
 ﻿using System;
-using System.Management;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 
-namespace SystemMonitorWpf.Services
+namespace ActivityMonitor.Services
 {
-    public static class CpuInfo
+    public class CpuInfo
     {
-        private static ulong lastIdleTime = 0;
-        private static ulong lastTotalTime = 0;
-        private static bool firstRun = true;
+        [DllImport("kernel32.dll", SetLastError = true)]
+        static extern bool GetSystemTimes(
+            out FILETIME idleTime,
+            out FILETIME kernelTime,
+            out FILETIME userTime);
 
-        public static double GetCpuUsage()
+        struct FILETIME
         {
-            var searcher = new ManagementObjectSearcher(
-                "SELECT * FROM Win32_PerfRawData_PerfOS_Processor WHERE Name=\"_Total\"");
-
-            foreach (ManagementObject obj in searcher.Get())
-            {
-                ulong idle = (ulong)obj["PercentIdleTime"];
-                ulong total = (ulong)obj["Timestamp_Sys100NS"];
-
-                if (firstRun)
-                {
-                    lastIdleTime = idle;
-                    lastTotalTime = total;
-                    firstRun = false;
-                    return 0;
-                }
-
-                ulong idleDelta = idle - lastIdleTime;
-                ulong totalDelta = total - lastTotalTime;
-
-                lastIdleTime = idle;
-                lastTotalTime = total;
-
-                double usage = 100.0 - ((double)idleDelta / totalDelta * 100.0);
-                return Math.Round(usage, 2);
-            }
-
-            return 0;
+            public uint Low;
+            public uint High;
         }
+
+        private ulong _lastIdle, _lastKernel, _lastUser;
+
+        public double GetCpuUsage()
+        {
+            GetSystemTimes(out var idle, out var kernel, out var user);
+
+            ulong idleNow = ToUInt64(idle);
+            ulong kernelNow = ToUInt64(kernel);
+            ulong userNow = ToUInt64(user);
+
+            ulong idleDelta = idleNow - _lastIdle;
+            ulong kernelDelta = kernelNow - _lastKernel;
+            ulong userDelta = userNow - _lastUser;
+
+            _lastIdle = idleNow;
+            _lastKernel = kernelNow;
+            _lastUser = userNow;
+
+            ulong total = kernelDelta + userDelta;
+            double usage = total == 0
+                ? 0
+                : (1.0 - ((double)idleDelta / total)) * 100.0;
+
+            return Math.Round(usage, 2);
+        }
+
+        static ulong ToUInt64(FILETIME time)
+            => ((ulong)time.High << 32) | time.Low;
     }
 }

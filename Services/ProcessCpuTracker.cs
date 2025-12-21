@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace SystemMonitorWpf.Services
+namespace ActivityMonitor.Services
 {
     public class ProcessCpuTracker
     {
@@ -14,6 +14,7 @@ namespace SystemMonitorWpf.Services
             _coreCount = Environment.ProcessorCount;
         }
 
+        /// Calcula o uso de CPU do processo assumindo chamadas em intervalos regulares (~1s)
         public double GetCpu(Process p)
         {
             try

@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
-namespace SystemMonitorWPF.Services
+namespace ActivityMonitor.Models
 {
     public class ProcessInfo : INotifyPropertyChanged
     {
@@ -35,9 +36,7 @@ namespace SystemMonitorWPF.Services
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        protected void OnPropertyChanged([CallerMemberName] string? name = null)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }
