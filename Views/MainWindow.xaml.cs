@@ -25,28 +25,36 @@ namespace ActivityMonitor
     public sealed partial class MainWindow : Window
     {
         private readonly ProcessService _processService = new();
+        private DispatcherTimer _timer;
 
         public MainWindow()
         {
             this.InitializeComponent();
-            LoadMemory();
+            StartMonitoring();
         }
 
-        private void LoadMemory()
+        private void StartMonitoring()
         {
-            ProcessGrid.ItemsSource = _processService.GetProcesses();
+            _timer = new DispatcherTimer();
+            _timer.Interval = TimeSpan.FromSeconds(1);
+            _timer.Tick += OnTick;
+            _timer.Start();
+        }
+
+        private void OnTick(object sender, object e)
+        {
+            ProcessGrid.ItemsSource =
+                _processService.GetProcesses(1);
         }
 
         private void OnCpuClicked(object sender, RoutedEventArgs e)
         {
-            // Por enquanto só troca o título
             Title = "CPU";
         }
 
         private void OnMemoryClicked(object sender, RoutedEventArgs e)
         {
-            LoadMemory();
-            Title = "Memory";
+            Title = "Memória";
         }
     }
 }

@@ -10,29 +10,53 @@ namespace ActivityMonitor.Services
 {
     public class ProcessService
     {
-        public List<ProcessInfo> GetProcesses()
+        private readonly Dictionary<int, ProcessInfo> _cache = new();
+        private readonly int _processorCount = Environment.ProcessorCount;
+
+        public List<ProcessInfo> GetProcesses(double intervalSeconds)
         {
+            var result = new List<ProcessInfo>();
             var processes = Process.GetProcesses();
-            var list = new List<ProcessInfo>();
 
             foreach (var p in processes)
             {
                 try
                 {
-                    list.Add(new ProcessInfo
+                    var cpuTime = p.TotalProcessorTime;
+                    var memory = Math.Round(p.WorkingSet64 / 1024.0 / 1024.0, 2);
+
+                    if (!_cache.TryGetValue(p.Id, out var info))
                     {
-                        Name = p.ProcessName,
-                        Cpu = 0, // vamos calcular depois
-                        Memory = Math.Round(p.WorkingSet64 / 1024.0 / 1024.0, 2)
-                    });
+                        info = new ProcessInfo
+                        {
+                            Id = p.Id,
+                            Name = p.ProcessName,
+                            PreviousCpuTime = cpuTime
+                        };
+                        _cache[p.Id] = info;
+                    }
+
+                    var deltaCpu = cpuTime - info.PreviousCpuTime;
+
+                    info.Cpu = Math.Round(
+                        (deltaCpu.TotalMilliseconds /
+                         (intervalSeconds * 1000 * _processorCount)) * 100,
+                        2);
+
+                    info.Memory = memory;
+                    info.PreviousCpuTime = cpuTime;
+
+                    result.Add(info);
                 }
                 catch
                 {
-                    // alguns processos não permitem acesso
+                    // processos protegidos
                 }
             }
 
-            return list.OrderByDescending(p => p.Memory).ToList();
+            return result
+                .OrderByDescending(p => p.Cpu)
+                .ToList();
         }
     }
 }
