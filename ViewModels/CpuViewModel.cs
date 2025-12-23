@@ -12,7 +12,7 @@ namespace ActivityMonitor.ViewModels
 
         public double Usage
         {
-            get => Usage;
+            get => _usage;
             set
             {
                 if(_usage != value)
