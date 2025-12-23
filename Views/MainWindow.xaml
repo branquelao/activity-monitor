@@ -29,20 +29,22 @@
             <controls:DataGrid.Columns>
 
                 <controls:DataGridTextColumn
-                    Header="Processo"
+                    x:Name="ProcessColumn"
+                    Header="Process"
                     Binding="{Binding Name}"
                     Width="*"/>
 
                 <controls:DataGridTextColumn
+                    x:Name="CpuColumn"
                     Header="CPU (%)"
                     Binding="{Binding Cpu}"
                     Width="120"/>
 
                 <controls:DataGridTextColumn
-                    Header="Memória (MB)"
+                    x:Name="MemoryColumn"
+                    Header="Memory (MB)"
                     Binding="{Binding Memory}"
                     Width="150"/>
-
             </controls:DataGrid.Columns>
         </controls:DataGrid>
     </Grid>

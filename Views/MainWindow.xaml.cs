@@ -26,11 +26,13 @@ namespace ActivityMonitor
     {
         private readonly ProcessService _processService = new();
         private DispatcherTimer _timer;
+        private ViewMode _currentMode = ViewMode.Cpu;
 
         public MainWindow()
         {
             this.InitializeComponent();
             StartMonitoring();
+            UpdateColumns();
         }
 
         private void StartMonitoring()
@@ -43,18 +45,54 @@ namespace ActivityMonitor
 
         private void OnTick(object sender, object e)
         {
-            ProcessGrid.ItemsSource =
-                _processService.GetProcesses(1);
+            var processes = _processService.GetProcesses(1);
+
+            if (_currentMode == ViewMode.Cpu)
+            {
+                ProcessGrid.ItemsSource = processes
+                    .OrderByDescending(p => p.Cpu)
+                    .ToList();
+            } else
+            {
+                ProcessGrid.ItemsSource = processes
+                    .OrderByDescending(p => p.Memory)
+                    .ToList();
+            }
         }
 
         private void OnCpuClicked(object sender, RoutedEventArgs e)
         {
+            _currentMode = ViewMode.Cpu;
             Title = "CPU";
+            UpdateColumns();
         }
 
         private void OnMemoryClicked(object sender, RoutedEventArgs e)
         {
+            _currentMode = ViewMode.Memory;
             Title = "Memória";
+            UpdateColumns();
         }
+
+        public enum ViewMode
+        {
+            Cpu,
+            Memory
+        }
+
+        private void UpdateColumns()
+        {
+            if (_currentMode == ViewMode.Cpu)
+            {
+                CpuColumn.Visibility = Visibility.Visible;
+                MemoryColumn.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                CpuColumn.Visibility = Visibility.Collapsed;
+                MemoryColumn.Visibility = Visibility.Visible;
+            }
+        }
+
     }
 }

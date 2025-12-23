@@ -50,13 +50,11 @@ namespace ActivityMonitor.Services
                 }
                 catch
                 {
-                    // processos protegidos
+                    // protected processes
                 }
             }
 
-            return result
-                .OrderByDescending(p => p.Cpu)
-                .ToList();
+            return result;
         }
     }
 }
