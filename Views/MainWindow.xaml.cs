@@ -1,5 +1,7 @@
+using ActivityMonitor.Services;
 using ActivityMonitor.ViewModels;
 using Microsoft.UI;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -15,25 +17,36 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using WinRT.Interop;
-using Microsoft.UI.Windowing;
+using static System.Net.WebRequestMethods;
 
 
 namespace ActivityMonitor
 {
-
     public sealed partial class MainWindow : Window
     {
-        public MainViewModel ViewModel { get; } = new();
+        private readonly ProcessService _processService = new();
+
         public MainWindow()
         {
-            InitializeComponent();
+            this.InitializeComponent();
+            LoadMemory();
+        }
 
-            var hwnd = WindowNative.GetWindowHandle(this);
-            var windowId = Win32Interop.GetWindowIdFromWindow(hwnd);
-            var appWindow = AppWindow.GetFromWindowId(windowId);
+        private void LoadMemory()
+        {
+            ProcessGrid.ItemsSource = _processService.GetProcesses();
+        }
 
-            appWindow.Resize(new Windows.Graphics.SizeInt32(900, 600));
+        private void OnCpuClicked(object sender, RoutedEventArgs e)
+        {
+            // Por enquanto só troca o título
+            Title = "CPU";
+        }
 
+        private void OnMemoryClicked(object sender, RoutedEventArgs e)
+        {
+            LoadMemory();
+            Title = "Memory";
         }
     }
 }
