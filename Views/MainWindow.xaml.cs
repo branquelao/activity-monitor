@@ -30,7 +30,14 @@ namespace ActivityMonitor
 
         public MainWindow()
         {
-            this.InitializeComponent();
+            InitializeComponent();
+
+            var hwnd = WindowNative.GetWindowHandle(this);
+            var windowId = Win32Interop.GetWindowIdFromWindow(hwnd);
+            var appWindow = AppWindow.GetFromWindowId(windowId);
+
+            appWindow.Resize(new Windows.Graphics.SizeInt32(800, 600));
+
             StartMonitoring();
             UpdateColumns();
         }

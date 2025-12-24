@@ -11,20 +11,29 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- TOPO -->
-        <StackPanel Orientation="Horizontal" Padding="12" Spacing="8">
-            <Button Content="CPU"
-                    Click="OnCpuClicked"/>
-            <Button Content="Memória"
-                    Click="OnMemoryClicked"/>
-        </StackPanel>
+        <Grid Grid.Row="0"
+              Padding="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-        <!-- LISTA -->
+            <StackPanel Grid.Column="1"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                <Button Content="CPU"
+                        Click="OnCpuClicked"/>
+                <Button Content="Memória"
+                        Click="OnMemoryClicked"/>
+            </StackPanel>
+        </Grid>
+
         <controls:DataGrid x:Name="ProcessGrid"
-                   Grid.Row="1"
-                   AutoGenerateColumns="False"
-                   IsReadOnly="True"
-                   HeadersVisibility="Column">
+                           Grid.Row="1"
+                           AutoGenerateColumns="False"
+                           IsReadOnly="True"
+                           HeadersVisibility="Column">
 
             <controls:DataGrid.Columns>
 
@@ -47,5 +56,6 @@
                     Width="150"/>
             </controls:DataGrid.Columns>
         </controls:DataGrid>
+
     </Grid>
 </Window>
