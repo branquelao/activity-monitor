@@ -22,9 +22,13 @@
             <StackPanel Grid.Column="1"
                         Orientation="Horizontal"
                         Spacing="8">
-                <Button Content="CPU"
+                <Button x:Name="CpuButton"
+                        Style="{StaticResource HeaderButtonActive}"                  
+                        Content="CPU"
                         Click="OnCpuClicked"/>
-                <Button Content="Memória"
+                <Button x:Name="MemoryButton"
+                        Style="{StaticResource HeaderButtonInactive}"
+                        Content="Memory"
                         Click="OnMemoryClicked"/>
             </StackPanel>
         </Grid>

@@ -30,7 +30,7 @@ namespace ActivityMonitor
 
         public MainWindow()
         {
-            InitializeComponent();
+            this.InitializeComponent();
 
             var hwnd = WindowNative.GetWindowHandle(this);
             var windowId = Win32Interop.GetWindowIdFromWindow(hwnd);
@@ -93,13 +93,22 @@ namespace ActivityMonitor
             {
                 CpuColumn.Visibility = Visibility.Visible;
                 MemoryColumn.Visibility = Visibility.Collapsed;
+
+                CpuButton.Style = 
+                    (Style)Application.Current.Resources["HeaderButtonActive"];
+                MemoryButton.Style = 
+                    (Style)Application.Current.Resources["HeaderButtonInactive"];
             }
             else
             {
                 CpuColumn.Visibility = Visibility.Collapsed;
                 MemoryColumn.Visibility = Visibility.Visible;
+
+                CpuButton.Style =
+                    (Style)Application.Current.Resources["HeaderButtonInactive"];
+                MemoryButton.Style =
+                    (Style)Application.Current.Resources["HeaderButtonActive"];
             }
         }
-
     }
 }
