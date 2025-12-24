@@ -24,90 +24,27 @@ namespace ActivityMonitor
 {
     public sealed partial class MainWindow : Window
     {
-        private readonly ProcessService _processService = new();
-        private DispatcherTimer _timer;
-        private ViewMode _currentMode = ViewMode.Cpu;
-
+        public MainViewModel ViewModel { get; } = new();
         public MainWindow()
         {
-            this.InitializeComponent();
+            InitializeComponent();
+            RootGrid.DataContext = ViewModel;
 
-            var hwnd = WindowNative.GetWindowHandle(this);
-            var windowId = Win32Interop.GetWindowIdFromWindow(hwnd);
-            var appWindow = AppWindow.GetFromWindowId(windowId);
-
-            appWindow.Resize(new Windows.Graphics.SizeInt32(800, 600));
-
-            StartMonitoring();
-            UpdateColumns();
+            SetWindowsSize(800, 600, 700, 450);
         }
 
-        private void StartMonitoring()
+        private void SetWindowsSize(int width, int height, int minWidth, int minHeight)
         {
-            _timer = new DispatcherTimer();
-            _timer.Interval = TimeSpan.FromSeconds(1);
-            _timer.Tick += OnTick;
-            _timer.Start();
-        }
+            IntPtr hWnd = WindowNative.GetWindowHandle(this);
+            WindowId windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
+            AppWindow appWindow = AppWindow.GetFromWindowId(windowId);
 
-        private void OnTick(object sender, object e)
-        {
-            var processes = _processService.GetProcesses(1);
+            appWindow.Resize(new Windows.Graphics.SizeInt32(width, height));
 
-            if (_currentMode == ViewMode.Cpu)
+            if (appWindow.Presenter is OverlappedPresenter presenter)
             {
-                ProcessGrid.ItemsSource = processes
-                    .OrderByDescending(p => p.Cpu)
-                    .ToList();
-            } else
-            {
-                ProcessGrid.ItemsSource = processes
-                    .OrderByDescending(p => p.Memory)
-                    .ToList();
-            }
-        }
-
-        private void OnCpuClicked(object sender, RoutedEventArgs e)
-        {
-            _currentMode = ViewMode.Cpu;
-            Title = "CPU";
-            UpdateColumns();
-        }
-
-        private void OnMemoryClicked(object sender, RoutedEventArgs e)
-        {
-            _currentMode = ViewMode.Memory;
-            Title = "Memória";
-            UpdateColumns();
-        }
-
-        public enum ViewMode
-        {
-            Cpu,
-            Memory
-        }
-
-        private void UpdateColumns()
-        {
-            if (_currentMode == ViewMode.Cpu)
-            {
-                CpuColumn.Visibility = Visibility.Visible;
-                MemoryColumn.Visibility = Visibility.Collapsed;
-
-                CpuButton.Style = 
-                    (Style)Application.Current.Resources["HeaderButtonActive"];
-                MemoryButton.Style = 
-                    (Style)Application.Current.Resources["HeaderButtonInactive"];
-            }
-            else
-            {
-                CpuColumn.Visibility = Visibility.Collapsed;
-                MemoryColumn.Visibility = Visibility.Visible;
-
-                CpuButton.Style =
-                    (Style)Application.Current.Resources["HeaderButtonInactive"];
-                MemoryButton.Style =
-                    (Style)Application.Current.Resources["HeaderButtonActive"];
+                presenter.PreferredMinimumWidth = minWidth;
+                presenter.PreferredMinimumHeight = minHeight;
             }
         }
     }
