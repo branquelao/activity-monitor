@@ -10,6 +10,11 @@ namespace ActivityMonitor.Models
         public string Name { get; set; }
         public double Cpu { get; set; }
         public double Memory { get; set; }
+
+        public TimeSpan CpuTime { get; set; }
+        public int ThreadCount { get; set; }
+
+        public string User { get; set; } = "-";
         public TimeSpan PreviousCpuTime { get; set; }
     }
 

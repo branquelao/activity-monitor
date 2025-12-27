@@ -54,6 +54,7 @@
                     Binding="{Binding Name}"
                     Width="*"/>
 
+                <!-- CPU Mode Columns -->
                 <controls:DataGridTextColumn
                     x:Name="CpuColumn"
                     Header="CPU (%)"
@@ -61,6 +62,31 @@
                     Width="120"
                     Visibility="{x:Bind ViewModel.IsCpuMode, Mode=OneWay}"/>
 
+                <controls:DataGridTextColumn
+                    Header="PID"
+                    Binding="{Binding Id}"
+                    Width="90"
+                    Visibility="{x:Bind ViewModel.IsCpuMode, Mode=OneWay}" />
+
+                <controls:DataGridTextColumn
+                    Header="CPU Time"
+                    Binding="{Binding CpuTime}"
+                    Width="140"
+                    Visibility="{x:Bind ViewModel.IsCpuMode, Mode=OneWay}" />
+
+                <controls:DataGridTextColumn
+                    Header="Threads"
+                    Binding="{Binding ThreadCount}"
+                    Width="100"
+                    Visibility="{x:Bind ViewModel.IsCpuMode, Mode=OneWay}" />
+
+                <controls:DataGridTextColumn
+                    Header="User"
+                    Binding="{Binding User}"
+                    Width="200"
+                    Visibility="{x:Bind ViewModel.IsCpuMode, Mode=OneWay}" />
+
+                <!-- Memory Mode Columns -->
                 <controls:DataGridTextColumn
                     x:Name="MemoryColumn"
                     Header="Memory (MB)"

@@ -30,7 +30,7 @@ namespace ActivityMonitor
             InitializeComponent();
             RootGrid.DataContext = ViewModel;
 
-            SetWindowsSize(800, 600, 700, 450);
+            SetWindowsSize(1200, 600, 700, 450);
         }
 
         private void SetWindowsSize(int width, int height, int minWidth, int minHeight)

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -44,6 +45,9 @@ namespace ActivityMonitor.Services
                         2);
 
                     info.Memory = memory;
+                    info.CpuTime = cpuTime;
+                    info.ThreadCount = p.Threads.Count;
+                    info.User = GetProcessUser(p);
                     info.PreviousCpuTime = cpuTime;
 
                     result.Add(info);
@@ -55,6 +59,19 @@ namespace ActivityMonitor.Services
             }
 
             return result;
+        }
+
+        private static string GetProcessUser(Process process)
+        {
+            try
+            {
+                using var identity = new WindowsIdentity(process.Handle);
+                return identity.Name;
+            }
+            catch
+            {
+                return "SYSTEM";
+            }
         }
     }
 }
