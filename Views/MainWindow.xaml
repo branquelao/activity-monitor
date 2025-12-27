@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:converters="using:ActivityMonitor.Converters"
     Title="Activity Monitor">
 
     <Grid x:Name="RootGrid">
@@ -12,6 +13,10 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
+        <Grid.Resources>
+            <converters:TimeSpanConverter x:Key="TimeSpanConverter"/>
+        </Grid.Resources>
+        
         <Grid Grid.Row="0"
               Padding="12">
             <Grid.ColumnDefinitions>
@@ -70,7 +75,7 @@
 
                 <controls:DataGridTextColumn
                     Header="CPU Time"
-                    Binding="{Binding CpuTime}"
+                    Binding="{Binding CpuTime, Converter={StaticResource TimeSpanConverter}}"
                     Width="140"
                     Visibility="{x:Bind ViewModel.IsCpuMode, Mode=OneWay}" />
 
