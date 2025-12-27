@@ -68,12 +68,6 @@
                     Visibility="{x:Bind ViewModel.IsCpuMode, Mode=OneWay}"/>
 
                 <controls:DataGridTextColumn
-                    Header="PID"
-                    Binding="{Binding Id}"
-                    Width="90"
-                    Visibility="{x:Bind ViewModel.IsCpuMode, Mode=OneWay}" />
-
-                <controls:DataGridTextColumn
                     Header="CPU Time"
                     Binding="{Binding CpuTime, Converter={StaticResource TimeSpanConverter}}"
                     Width="140"
@@ -86,9 +80,15 @@
                     Visibility="{x:Bind ViewModel.IsCpuMode, Mode=OneWay}" />
 
                 <controls:DataGridTextColumn
+                    Header="PID"
+                    Binding="{Binding Id}"
+                    Width="90"
+                    Visibility="{x:Bind ViewModel.IsCpuMode, Mode=OneWay}" />
+                
+                <controls:DataGridTextColumn
                     Header="User"
                     Binding="{Binding User}"
-                    Width="200"
+                    Width="120"
                     Visibility="{x:Bind ViewModel.IsCpuMode, Mode=OneWay}" />
 
                 <!-- Memory Mode Columns -->
@@ -98,6 +98,30 @@
                     Binding="{Binding Memory}"
                     Width="150"
                     Visibility="{x:Bind ViewModel.IsMemoryMode, Mode=OneWay}"/>
+
+                <controls:DataGridTextColumn
+                    Header="Threads"
+                    Binding="{Binding ThreadCount}"
+                    Width="100"
+                    Visibility="{x:Bind ViewModel.IsMemoryMode, Mode=OneWay}" />
+
+                <controls:DataGridTextColumn
+                    Header="Ports"
+                    Binding="{Binding HandleCount}"
+                    Width="100"
+                    Visibility="{x:Bind ViewModel.IsMemoryMode, Mode=OneWay}" />
+
+                <controls:DataGridTextColumn
+                    Header="PID"
+                    Binding="{Binding Id}"
+                    Width="90"
+                    Visibility="{x:Bind ViewModel.IsMemoryMode, Mode=OneWay}" />
+                
+                <controls:DataGridTextColumn
+                    Header="User"
+                    Binding="{Binding User}"
+                    Width="120"
+                    Visibility="{x:Bind ViewModel.IsMemoryMode, Mode=OneWay}" />
             </controls:DataGrid.Columns>
         </controls:DataGrid>
 

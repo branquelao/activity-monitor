@@ -16,6 +16,8 @@ namespace ActivityMonitor.Models
 
         public string User { get; set; } = "-";
         public TimeSpan PreviousCpuTime { get; set; }
+
+        public long HandleCount { get; set; }
     }
 
 }

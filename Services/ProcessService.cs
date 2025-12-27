@@ -47,6 +47,7 @@ namespace ActivityMonitor.Services
                     info.Memory = memory;
                     info.CpuTime = cpuTime;
                     info.ThreadCount = p.Threads.Count;
+                    info.HandleCount = p.HandleCount;
                     info.User = GetProcessUser(p);
                     info.PreviousCpuTime = cpuTime;
 
