@@ -31,7 +31,6 @@
                    BasedOn="{StaticResource HeaderButtonInactive}">
                 <Setter Property="Background" Value="#8C8C8C"/>
                 <Setter Property="BorderBrush" Value="#A0A0A0"/>
-                <Setter Property="Foreground" Value="Black"/>
             </Style>
 
             <!-- Converter -->
