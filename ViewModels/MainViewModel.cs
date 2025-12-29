@@ -79,25 +79,48 @@ namespace ActivityMonitor.ViewModels
         {
             int? selectedId = SelectedProcess?.Id;
 
-            var list = _service.GetProcesses(1);
+            var list = _service.GetProcesses(1)
+                               .ToDictionary(p => p.Id);
+
+            for (int i = Processes.Count - 1; i >= 0; i--)
+            {
+                if (!list.ContainsKey(Processes[i].Id))
+                    Processes.RemoveAt(i);
+            }
+
+            foreach (var p in list.Values)
+            {
+                var existing = Processes.FirstOrDefault(x => x.Id == p.Id);
+
+                if (existing == null)
+                {
+                    Processes.Add(p);
+                }
+                else
+                {
+                    existing.Cpu = p.Cpu;
+                    existing.Memory = p.Memory;
+                    existing.CpuTime = p.CpuTime;
+                    existing.ThreadCount = p.ThreadCount;
+                    existing.HandleCount = p.HandleCount;
+                }
+            }
 
             var ordered = _currentMode == Viewmode.Cpu
-                ? list.OrderByDescending(p => p.Cpu)
-                : list.OrderByDescending(p => p.Memory);
+                ? Processes.OrderByDescending(p => p.Cpu).ToList()
+                : Processes.OrderByDescending(p => p.Memory).ToList();
 
-            Processes.Clear();
-            ProcessInfo? newSelection = null;
-
-            foreach (var p in ordered)
+            for (int i = 0; i < ordered.Count; i++)
             {
-                Processes.Add(p);
-
-                if (p.Id == selectedId)
-                    newSelection = p;
+                var currentIndex = Processes.IndexOf(ordered[i]);
+                if (currentIndex != i)
+                    Processes.Move(currentIndex, i);
             }
-            
-            SelectedProcess = newSelection;
+
+            if (selectedId.HasValue)
+                SelectedProcess = Processes.FirstOrDefault(p => p.Id == selectedId);
         }
+
 
         private void EndTask()
         {
