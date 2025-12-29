@@ -15,6 +15,8 @@ namespace ActivityMonitor.Models
         public int ThreadCount { get; set; }
 
         public string User { get; set; } = "-";
+        public string OwnerType { get; set; } = "User";
+
         public TimeSpan PreviousCpuTime { get; set; }
 
         public long HandleCount { get; set; }

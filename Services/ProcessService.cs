@@ -6,6 +6,7 @@ using System.Linq;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
+using System.Management;
 
 namespace ActivityMonitor.Services
 {
@@ -48,7 +49,7 @@ namespace ActivityMonitor.Services
                     info.CpuTime = cpuTime;
                     info.ThreadCount = p.Threads.Count;
                     info.HandleCount = p.HandleCount;
-                    info.User = GetProcessUser(p);
+                    GetProcessUser(info,p);
                     info.PreviousCpuTime = cpuTime;
 
                     result.Add(info);
@@ -62,16 +63,42 @@ namespace ActivityMonitor.Services
             return result;
         }
 
-        private static string GetProcessUser(Process process)
+        private static void GetProcessUser(ProcessInfo info, Process process)
         {
             try
             {
-                using var identity = new WindowsIdentity(process.Handle);
-                return identity.Name;
+                using var searcher = new ManagementObjectSearcher(
+                    $"SELECT * FROM Win32_Process WHERE ProcessId = {process.Id}");
+
+                foreach (ManagementObject obj in searcher.Get())
+                {
+                    var ownerInfo = new string[2];
+                    var result = (uint)obj.InvokeMethod("GetOwner", ownerInfo);
+
+                    if (result == 0)
+                    {
+                        var user = ownerInfo[0];
+                        var domain = ownerInfo[1];
+
+                        info.User = $"{domain}\\{user}";
+
+                        info.OwnerType =
+                            user.Equals("SYSTEM", StringComparison.OrdinalIgnoreCase) ||
+                            domain.Equals("NT AUTHORITY", StringComparison.OrdinalIgnoreCase)
+                                ? "System"
+                                : "User";
+
+                        return;
+                    }
+                }
+
+                info.OwnerType = "System";
+                info.User = "SYSTEM";
             }
             catch
             {
-                return "SYSTEM";
+                info.OwnerType = "System";
+                info.User = "SYSTEM";
             }
         }
     }
