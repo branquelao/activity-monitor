@@ -35,6 +35,7 @@ namespace ActivityMonitor.Services
                             Name = p.ProcessName,
                             PreviousCpuTime = cpuTime
                         };
+                        ClassifyProcess(info, p);
                         _cache[p.Id] = info;
                     }
 
@@ -49,7 +50,6 @@ namespace ActivityMonitor.Services
                     info.CpuTime = cpuTime;
                     info.ThreadCount = p.Threads.Count;
                     info.HandleCount = p.HandleCount;
-                    GetProcessUser(info,p);
                     info.PreviousCpuTime = cpuTime;
 
                     result.Add(info);
@@ -63,43 +63,27 @@ namespace ActivityMonitor.Services
             return result;
         }
 
-        private static void GetProcessUser(ProcessInfo info, Process process)
+        private static void ClassifyProcess(ProcessInfo info, Process process)
         {
-            try
+            if (process.Id == 4)
             {
-                using var searcher = new ManagementObjectSearcher(
-                    $"SELECT * FROM Win32_Process WHERE ProcessId = {process.Id}");
-
-                foreach (ManagementObject obj in searcher.Get())
-                {
-                    var ownerInfo = new string[2];
-                    var result = (uint)obj.InvokeMethod("GetOwner", ownerInfo);
-
-                    if (result == 0)
-                    {
-                        var user = ownerInfo[0];
-                        var domain = ownerInfo[1];
-
-                        info.User = $"{domain}\\{user}";
-
-                        info.OwnerType =
-                            user.Equals("SYSTEM", StringComparison.OrdinalIgnoreCase) ||
-                            domain.Equals("NT AUTHORITY", StringComparison.OrdinalIgnoreCase)
-                                ? "System"
-                                : "User";
-
-                        return;
-                    }
-                }
-
-                info.OwnerType = "System";
+                info.OwnerType = "Kernel";
                 info.User = "SYSTEM";
+                return;
             }
-            catch
+
+            if (process.ProcessName.Equals("svchost", StringComparison.OrdinalIgnoreCase) ||
+                process.ProcessName.Equals("services", StringComparison.OrdinalIgnoreCase) ||
+                process.ProcessName.Equals("lsass", StringComparison.OrdinalIgnoreCase))
             {
-                info.OwnerType = "System";
+                info.OwnerType = "Service";
                 info.User = "SYSTEM";
+                return;
             }
+
+            info.OwnerType = "Application";
+            info.User = Environment.UserName;
         }
+
     }
 }
