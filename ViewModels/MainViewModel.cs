@@ -83,6 +83,30 @@ namespace ActivityMonitor.ViewModels
         public string CpuUsedText => $"{CpuUsed:F2}%";
         public string CpuFreeText => $"{CpuFree:F2}%";
 
+        private double _memoryUsed;
+
+        public double MemoryUsed
+        {
+            get => _memoryUsed;
+            private set
+            {
+                if (Math.Abs(_memoryUsed - value) < 0.01)
+                    return;
+
+                _memoryUsed = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(MemoryUsedText));
+                OnPropertyChanged(nameof(MemoryFree));
+                OnPropertyChanged(nameof(MemoryFreeText));
+            }
+        }
+
+        public double MemoryFree => 100 - MemoryUsed;
+        public string MemoryUsedText => $"{MemoryUsed:F2}%";
+        public string MemoryFreeText => $"{MemoryFree:F2}%";
+
+        private readonly MemoryService _memoryService = new();
+
         public MainViewModel()
         {
             EndTaskCommand = new RelayCommand(EndTask);
@@ -145,6 +169,11 @@ namespace ActivityMonitor.ViewModels
             if(IsCpuMode)
             {
                 CpuUsed = _cpuService.CpuUsage();
+            }
+
+            if (IsMemoryMode)
+            {
+                MemoryUsed = _memoryService.MemoryUsedPercent();
             }
         }
 
