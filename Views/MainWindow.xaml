@@ -11,6 +11,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <Grid.Resources>
@@ -124,6 +125,29 @@
                     Visibility="{x:Bind ViewModel.IsMemoryMode, Mode=OneWay}" />
             </controls:DataGrid.Columns>
         </controls:DataGrid>
+
+        <StackPanel Grid.Row="2"
+            Orientation="Horizontal"
+            HorizontalAlignment="Center"
+            Spacing="24"
+            Margin="0,8,0,12"
+            Visibility="{x:Bind ViewModel.IsCpuMode, Mode=OneWay}">
+
+            <TextBlock FontSize="14">
+                <Run Text="CPU Used: "/>
+                <Run Text="{x:Bind ViewModel.CpuUsedText, Mode=OneWay}"
+                     Foreground="OrangeRed"
+                     FontWeight="SemiBold"/>
+            </TextBlock>
+
+            <TextBlock FontSize="14">
+                <Run Text="CPU Free: "/>
+                <Run Text="{x:Bind ViewModel.CpuFreeText, Mode=OneWay}"
+                     Foreground="LightGreen"
+                     FontWeight="SemiBold"/>
+            </TextBlock>
+        </StackPanel>
+
 
     </Grid>
 </Window>

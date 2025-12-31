@@ -61,6 +61,28 @@ namespace ActivityMonitor.ViewModels
         public ICommand MemoryCommand { get; }
         public ICommand EndTaskCommand { get; }
 
+        private readonly CpuService _cpuService = new();
+
+        private double _cpuUsed;
+        public double CpuUsed
+        {
+            get => _cpuUsed;
+            set
+            {
+                if(Math.Abs(_cpuUsed - value) < 0.01)
+                    return;
+
+                _cpuUsed = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(CpuUsedText));
+                OnPropertyChanged(nameof(CpuFree));
+                OnPropertyChanged(nameof(CpuFreeText));
+            }
+        }
+        public double CpuFree => 100 - CpuUsed;
+        public string CpuUsedText => $"{CpuUsed:F2}%";
+        public string CpuFreeText => $"{CpuFree:F2}%";
+
         public MainViewModel()
         {
             EndTaskCommand = new RelayCommand(EndTask);
@@ -119,6 +141,11 @@ namespace ActivityMonitor.ViewModels
 
             if (selectedId.HasValue)
                 SelectedProcess = Processes.FirstOrDefault(p => p.Id == selectedId);
+
+            if(IsCpuMode)
+            {
+                CpuUsed = _cpuService.CpuUsage();
+            }
         }
 
 
