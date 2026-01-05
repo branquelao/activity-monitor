@@ -16,6 +16,14 @@ namespace ActivityMonitor.ViewModels
         Cpu,
         Memory
     }
+
+    public enum SortState
+    {
+        None,
+        Ascending,
+        Descending
+    }
+
     public class MainViewModel : ViewModelBase
     {
         private readonly ProcessService _service = new();
@@ -107,6 +115,9 @@ namespace ActivityMonitor.ViewModels
 
         private readonly MemoryService _memoryService = new();
 
+        private string? _sortedColumn;
+        private SortState _sortState = SortState.None;
+
         public MainViewModel()
         {
             EndTaskCommand = new RelayCommand(EndTask);
@@ -175,6 +186,8 @@ namespace ActivityMonitor.ViewModels
             {
                 MemoryUsed = _memoryService.MemoryUsedPercent();
             }
+
+            ApplySorting();
         }
 
 
@@ -196,5 +209,69 @@ namespace ActivityMonitor.ViewModels
 
             UpdateProcesses();
         }
+        public void ApplyColumnSort(string column)
+        {
+            if (_sortedColumn != column)
+            {
+                _sortedColumn = column;
+                _sortState = SortState.Descending;
+            }
+            else
+            {
+                _sortState = _sortState switch
+                {
+                    SortState.Descending => SortState.Ascending,
+                    SortState.Ascending => SortState.None,
+                    _ => SortState.Descending
+                };
+
+                if (_sortState == SortState.None)
+                    _sortedColumn = null;
+            }
+
+            ApplySorting();
+        }
+
+        private void ApplySorting()
+        {
+            IEnumerable<ProcessInfo> ordered;
+
+            if (_sortState == SortState.None || _sortedColumn == null)
+            {
+                // Normal Sorting
+                ordered = CurrentMode == Viewmode.Cpu
+                    ? Processes.OrderByDescending(p => p.Cpu)
+                    : Processes.OrderByDescending(p => p.Memory);
+            }
+            else
+            {
+                Func<ProcessInfo, object> selector = _sortedColumn switch
+                {
+                    "Process" => p => p.Name,
+                    "CPU (%)" => p => p.Cpu,
+                    "CPU Time" => p => p.CpuTime,
+                    "Threads" => p => p.ThreadCount,
+                    "PID" => p => p.Id,
+                    "Memory (MB)" => p => p.Memory,
+                    "Handles" => p => p.HandleCount,
+                    "Type" => p => p.OwnerType,
+                    _ => p => p.Id
+                };
+
+                ordered = _sortState == SortState.Ascending
+                    ? Processes.OrderBy(selector)
+                    : Processes.OrderByDescending(selector);
+            }
+
+            var list = ordered.ToList();
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                int oldIndex = Processes.IndexOf(list[i]);
+                if (oldIndex != i)
+                    Processes.Move(oldIndex, i);
+            }
+        }
+
     }
 }
