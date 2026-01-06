@@ -56,14 +56,18 @@ namespace ActivityMonitor.ViewModels
                     return;
 
                 _currentMode = value;
+
+                _sortedColumn = null;
+                _sortState = SortState.None;
+
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(IsCpuMode));
                 OnPropertyChanged(nameof(IsMemoryMode));
 
                 UpdateProcesses();
+                ApplySorting();
             }
         }
-
 
         public ICommand CpuCommand { get; }
         public ICommand MemoryCommand { get; }
@@ -163,17 +167,6 @@ namespace ActivityMonitor.ViewModels
                 }
             }
 
-            var ordered = _currentMode == Viewmode.Cpu
-                ? Processes.OrderByDescending(p => p.Cpu).ToList()
-                : Processes.OrderByDescending(p => p.Memory).ToList();
-
-            for (int i = 0; i < ordered.Count; i++)
-            {
-                var currentIndex = Processes.IndexOf(ordered[i]);
-                if (currentIndex != i)
-                    Processes.Move(currentIndex, i);
-            }
-
             if (selectedId.HasValue)
                 SelectedProcess = Processes.FirstOrDefault(p => p.Id == selectedId);
 
@@ -238,7 +231,6 @@ namespace ActivityMonitor.ViewModels
 
             if (_sortState == SortState.None || _sortedColumn == null)
             {
-                // Normal Sorting
                 ordered = CurrentMode == Viewmode.Cpu
                     ? Processes.OrderByDescending(p => p.Cpu)
                     : Processes.OrderByDescending(p => p.Memory);
@@ -272,6 +264,5 @@ namespace ActivityMonitor.ViewModels
                     Processes.Move(oldIndex, i);
             }
         }
-
     }
 }

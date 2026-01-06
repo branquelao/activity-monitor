@@ -15,8 +15,6 @@ namespace ActivityMonitor
         public MainWindow()
         {
             InitializeComponent();
-
-            // ✔ WinUI 3: DataContext deve ser setado em um elemento raiz
             RootGrid.DataContext = ViewModel;
 
             SetWindowsSize(1200, 600, 700, 450);
