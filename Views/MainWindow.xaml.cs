@@ -3,6 +3,7 @@ using CommunityToolkit.WinUI.UI.Controls;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using System;
 using WinRT.Interop;
 
@@ -12,10 +13,14 @@ namespace ActivityMonitor
     {
         public MainViewModel ViewModel { get; } = new();
 
+        private ElementTheme _currentTheme = ElementTheme.Dark;
+
         public MainWindow()
         {
             InitializeComponent();
             RootGrid.DataContext = ViewModel;
+
+            ApplyTheme(_currentTheme);
 
             SetWindowsSize(1200, 600, 700, 450);
         }
@@ -40,6 +45,25 @@ namespace ActivityMonitor
             string column = e.Column.Header?.ToString() ?? string.Empty;
 
             ViewModel.ApplyColumnSort(column);
+        }
+
+        private void ThemeToggle_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (sender is ToggleSwitch toggle)
+            {
+                _currentTheme = toggle.IsOn
+                    ? ElementTheme.Dark
+                    : ElementTheme.Light;
+
+                ApplyTheme(_currentTheme);
+            }
+        }
+
+        private void ApplyTheme(ElementTheme theme)
+        {
+            // MUITO IMPORTANTE
+            RootGrid.RequestedTheme = ElementTheme.Default;
+            RootGrid.RequestedTheme = theme;
         }
     }
 }

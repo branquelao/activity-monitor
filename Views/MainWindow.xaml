@@ -7,7 +7,8 @@
     xmlns:converters="using:ActivityMonitor.Converters"
     Title="Activity Monitor">
 
-    <Grid x:Name="RootGrid">
+    <Grid x:Name="RootGrid"
+          Background="{ThemeResource AppBackgroundColor}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -29,6 +30,15 @@
             <StackPanel Grid.Column="1"
                         Orientation="Horizontal"
                         Spacing="8">
+                
+                <ToggleSwitch 
+                    Foreground="{ThemeResource AppForegroundColor}"
+                    x:Name="ThemeToggle"
+                    Toggled="ThemeToggle_Toggled"
+                    VerticalAlignment="Center"
+                    IsOn="True">
+                </ToggleSwitch>
+                
                 <Button x:Name="EndButton"
                         Content="X"
                         Background="Red"
@@ -138,14 +148,14 @@
             <TextBlock FontSize="14">
                 <Run Text="CPU Used: "/>
                 <Run Text="{x:Bind ViewModel.CpuUsedText, Mode=OneWay}"
-                     Foreground="OrangeRed"
+                     Foreground="{ThemeResource UsedBrush}"
                      FontWeight="SemiBold"/>
             </TextBlock>
 
             <TextBlock FontSize="14">
                 <Run Text="CPU Free: "/>
                 <Run Text="{x:Bind ViewModel.CpuFreeText, Mode=OneWay}"
-                     Foreground="LightGreen"
+                     Foreground="{ThemeResource FreeBrush}"
                      FontWeight="SemiBold"/>
             </TextBlock>
         </StackPanel>
@@ -160,14 +170,14 @@
             <TextBlock FontSize="14">
                 <Run Text="Memory Used: "/>
                 <Run Text="{x:Bind ViewModel.MemoryUsedText, Mode=OneWay}"
-                     Foreground="OrangeRed"
+                     Foreground="{ThemeResource UsedBrush}"
                      FontWeight="SemiBold"/>
             </TextBlock>
 
             <TextBlock FontSize="14">
                 <Run Text="Memory Free: "/>
                 <Run Text="{x:Bind ViewModel.MemoryFreeText, Mode=OneWay}"
-                     Foreground="LightGreen"
+                     Foreground="{ThemeResource FreeBrush}"
                      FontWeight="SemiBold"/>
             </TextBlock>
 

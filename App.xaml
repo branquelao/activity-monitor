@@ -9,6 +9,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+                <ResourceDictionary Source="ms-appx:///Themes/Colors.xaml"/>
                 <!-- Other merged dictionaries here -->
             </ResourceDictionary.MergedDictionaries>
             <!-- Other app resources here -->
@@ -17,20 +18,27 @@
             <Style x:Key="HeaderButtonInactive"
                    TargetType="Button">
                 <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="BorderBrush" Value="White"/>
-                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="Foreground"
+                        Value="{ThemeResource HeaderButtonForeground}"/>
+                <Setter Property="BorderBrush"
+                        Value="{ThemeResource HeaderButtonBorder}"/>
                 <Setter Property="BorderThickness" Value="1"/>
                 <Setter Property="Padding" Value="12,6"/>
                 <Setter Property="CornerRadius" Value="6"/>
                 <Setter Property="FontWeight" Value="SemiBold"/>
             </Style>
 
-            <!-- Selected Button Style -->
+            <!-- Active Button Style -->
             <Style x:Key="HeaderButtonActive"
                    TargetType="Button"
                    BasedOn="{StaticResource HeaderButtonInactive}">
-                <Setter Property="Background" Value="#8C8C8C"/>
-                <Setter Property="BorderBrush" Value="#A0A0A0"/>
+                <Setter Property="Background"
+                        Value="{ThemeResource HeaderButtonActiveBackground}"/>
+            </Style>
+
+            <Style TargetType="TextBlock">
+                <Setter Property="Foreground"
+                        Value="{ThemeResource AppForegroundColor}" />
             </Style>
 
             <!-- Converter -->
