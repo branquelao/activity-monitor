@@ -20,9 +20,22 @@ namespace ActivityMonitor
             InitializeComponent();
             RootGrid.DataContext = ViewModel;
 
+            this.Activated += MainWindow_Activated;
+
             ApplyTheme(_currentTheme);
 
             SetWindowsSize(1200, 600, 700, 450);
+        }
+
+        private void MainWindow_Activated(object sender, WindowActivatedEventArgs e)
+        {
+            var hwnd = WindowNative.GetWindowHandle(this);
+            var windowId = Win32Interop.GetWindowIdFromWindow(hwnd);
+            var appWindow = AppWindow.GetFromWindowId(windowId);
+
+            appWindow.SetIcon("Assets/AppIcon_Logo.ico");
+
+            this.Activated -= MainWindow_Activated;
         }
 
         private void SetWindowsSize(int width, int height, int minWidth, int minHeight)
@@ -61,7 +74,6 @@ namespace ActivityMonitor
 
         private void ApplyTheme(ElementTheme theme)
         {
-            // MUITO IMPORTANTE
             RootGrid.RequestedTheme = ElementTheme.Default;
             RootGrid.RequestedTheme = theme;
         }
