@@ -22,7 +22,7 @@ namespace ActivityMonitor
 
             this.Activated += MainWindow_Activated;
 
-            SetWindowsSize(1200, 600, 700, 450);
+            SetWindowsSize(900, 600, 700, 450);
         }
 
         private void MainWindow_Activated(object sender, WindowActivatedEventArgs e)
