@@ -8,7 +8,7 @@
     Title="Activity Monitor">
 
     <Grid x:Name="RootGrid"
-          Background="{ThemeResource AppBackgroundColor}">
+          Background="{ThemeResource AppBackgroundBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -32,7 +32,7 @@
                         Spacing="8">
                 
                 <ToggleSwitch 
-                    Foreground="{ThemeResource AppForegroundColor}"
+                    Foreground="{ThemeResource AppForegroundBrush}"
                     x:Name="ThemeToggle"
                     Toggled="ThemeToggle_Toggled"
                     VerticalAlignment="Center"

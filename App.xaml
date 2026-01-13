@@ -38,7 +38,7 @@
 
             <Style TargetType="TextBlock">
                 <Setter Property="Foreground"
-                        Value="{ThemeResource AppForegroundColor}" />
+                        Value="{ThemeResource AppForegroundBrush}" />
             </Style>
 
             <!-- Converter -->
