@@ -30,24 +30,17 @@
             <StackPanel Grid.Column="1"
                         Orientation="Horizontal"
                         Spacing="8">
-                
-                <ToggleSwitch 
-                    Foreground="{ThemeResource AppForegroundBrush}"
-                    x:Name="ThemeToggle"
-                    Toggled="ThemeToggle_Toggled"
-                    VerticalAlignment="Center"
-                    IsOn="True">
-                </ToggleSwitch>
-                
+
                 <Button x:Name="EndButton"
                         Content="X"
                         Background="Red"
-                        Command="{Binding EndTaskCommand}">
-                </Button>
+                        Command="{Binding EndTaskCommand}"/>
+
                 <Button x:Name="CpuButton"
                         Style="{Binding IsCpuMode, Converter={StaticResource HeaderButtonStyleConverter}}"
                         Content="CPU"
                         Command="{Binding CpuCommand}"/>
+                
                 <Button x:Name="MemoryButton"
                         Style="{Binding IsMemoryMode, Converter={StaticResource HeaderButtonStyleConverter}}"
                         Content="Memory"

@@ -3,7 +3,6 @@ using CommunityToolkit.WinUI.UI.Controls;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using System;
 using WinRT.Interop;
 
@@ -13,16 +12,15 @@ namespace ActivityMonitor
     {
         public MainViewModel ViewModel { get; } = new();
 
-        private ElementTheme _currentTheme = ElementTheme.Dark;
-
         public MainWindow()
         {
             InitializeComponent();
+
             RootGrid.DataContext = ViewModel;
 
-            this.Activated += MainWindow_Activated;
+            RootGrid.RequestedTheme = ElementTheme.Default;
 
-            ApplyTheme(_currentTheme);
+            this.Activated += MainWindow_Activated;
 
             SetWindowsSize(1200, 600, 700, 450);
         }
@@ -56,26 +54,7 @@ namespace ActivityMonitor
         private void ProcessSorting(object sender, DataGridColumnEventArgs e)
         {
             string column = e.Column.Header?.ToString() ?? string.Empty;
-
             ViewModel.ApplyColumnSort(column);
-        }
-
-        private void ThemeToggle_Toggled(object sender, RoutedEventArgs e)
-        {
-            if (sender is ToggleSwitch toggle)
-            {
-                _currentTheme = toggle.IsOn
-                    ? ElementTheme.Dark
-                    : ElementTheme.Light;
-
-                ApplyTheme(_currentTheme);
-            }
-        }
-
-        private void ApplyTheme(ElementTheme theme)
-        {
-            RootGrid.RequestedTheme = ElementTheme.Default;
-            RootGrid.RequestedTheme = theme;
         }
     }
 }
