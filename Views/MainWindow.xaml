@@ -188,8 +188,8 @@
                 </TextBlock>
 
                 <TextBlock FontSize="14">
-                    <Run Text="Memory Free: "/>
-                    <Run Text="{x:Bind ViewModel.MemoryFreeText, Mode=OneWay}"
+                    <Run Text="Total Memory: "/>
+                    <Run Text="{x:Bind ViewModel.MemoryTotalText, Mode=OneWay}"
                          Foreground="{ThemeResource FreeBrush}"
                          FontWeight="SemiBold"/>
                 </TextBlock>

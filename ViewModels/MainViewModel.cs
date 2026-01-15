@@ -95,27 +95,38 @@ namespace ActivityMonitor.ViewModels
         public string CpuUsedText => $"{CpuUsed:F2}%";
         public string CpuFreeText => $"{CpuFree:F2}%";
 
-        private double _memoryUsed;
+        private double _memoryUsedGB;
+        private double _memoryTotalGB;
 
-        public double MemoryUsed
+        public double MemoryUsedGB
         {
-            get => _memoryUsed;
+            get => _memoryUsedGB;
             private set
             {
-                if (Math.Abs(_memoryUsed - value) < 0.01)
+                if (Math.Abs(_memoryUsedGB - value) < 0.01)
                     return;
 
-                _memoryUsed = value;
+                _memoryUsedGB = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(MemoryUsedText));
-                OnPropertyChanged(nameof(MemoryFree));
-                OnPropertyChanged(nameof(MemoryFreeText));
             }
         }
 
-        public double MemoryFree => 100 - MemoryUsed;
-        public string MemoryUsedText => $"{MemoryUsed:F2}%";
-        public string MemoryFreeText => $"{MemoryFree:F2}%";
+        public double MemoryTotalGB
+        {
+            get => _memoryTotalGB;
+            private set
+            {
+                if (Math.Abs(_memoryTotalGB - value) < 0.01)
+                    return;
+
+                _memoryTotalGB = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(MemoryTotalText));
+            }
+        }
+        public string MemoryUsedText => $"{MemoryUsedGB:F1} GB";
+        public string MemoryTotalText => $"{MemoryTotalGB:F1} GB";
 
         private readonly MemoryService _memoryService = new();
 
@@ -178,26 +189,19 @@ namespace ActivityMonitor.ViewModels
             if(IsCpuMode)
             {
                 CpuUsed = _cpuService.CpuUsage();
-            }
-
-            if (IsMemoryMode)
-            {
-                MemoryUsed = _memoryService.MemoryUsedPercent();
-            }
-
-            ApplySorting();
-
-            if (IsCpuMode)
-            {
-                CpuUsed = _cpuService.CpuUsage();
                 AddPoint(CpuHistory, CpuUsed);
             }
 
             if (IsMemoryMode)
             {
-                MemoryUsed = _memoryService.MemoryUsedPercent();
-                AddPoint(MemoryHistory, MemoryUsed);
+                _memoryService.Update();
+
+                MemoryUsedGB = _memoryService.UsedMemoryGB;
+                MemoryTotalGB = _memoryService.TotalMemoryGB;
+                AddPoint(MemoryHistory, MemoryUsedGB);
             }
+
+            ApplySorting();
         }
 
         private void AddPoint(ObservableCollection<double> collection, double value)

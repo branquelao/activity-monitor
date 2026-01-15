@@ -19,30 +19,29 @@ namespace ActivityMonitor.Services
             public ulong ullAvailExtendedVirtual;
         }
 
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
         private static extern bool GlobalMemoryStatusEx(ref MEMORYSTATUSEX lpBuffer);
 
-        public double MemoryUsedPercent()
+        private MEMORYSTATUSEX _mem;
+
+        public MemoryService()
         {
-            var mem = new MEMORYSTATUSEX();
-            mem.dwLength = (uint)Marshal.SizeOf(mem);
-
-            if (!GlobalMemoryStatusEx(ref mem))
-                return 0;
-
-            double used = mem.ullTotalPhys - mem.ullAvailPhys;
-            return (used / mem.ullTotalPhys) * 100;
+            _mem = new MEMORYSTATUSEX
+            {
+                dwLength = (uint)Marshal.SizeOf(typeof(MEMORYSTATUSEX))
+            };
         }
 
-        public double MemoryFreePercent()
+        public void Update()
         {
-            var mem = new MEMORYSTATUSEX();
-            mem.dwLength = (uint)Marshal.SizeOf(mem);
-
-            if (!GlobalMemoryStatusEx(ref mem))
-                return 0;
-
-            return (mem.ullAvailPhys / (double)mem.ullTotalPhys) * 100;
+            GlobalMemoryStatusEx(ref _mem);
         }
+
+        public double TotalMemoryGB =>
+            _mem.ullTotalPhys / 1024.0 / 1024 / 1024;
+
+        public double UsedMemoryGB =>
+            (_mem.ullTotalPhys - _mem.ullAvailPhys)
+            / 1024.0 / 1024 / 1024;
     }
 }
