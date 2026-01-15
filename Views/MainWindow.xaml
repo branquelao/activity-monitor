@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:localControls="using:ActivityMonitor.Controls"
     xmlns:converters="using:ActivityMonitor.Converters"
     Title="Activity Monitor">
 
@@ -133,48 +134,73 @@
         </controls:DataGrid>
 
         <StackPanel Grid.Row="2"
-            Orientation="Horizontal"
-            HorizontalAlignment="Center"
-            Spacing="24"
-            Margin="0,8,0,12"
-            Visibility="{x:Bind ViewModel.IsCpuMode, Mode=OneWay}">
+                    Orientation="Vertical"
+                    HorizontalAlignment="Center"
+                    Spacing="8"
+                    Margin="0,8,0,12"
+                    Visibility="{x:Bind ViewModel.IsCpuMode, Mode=OneWay}">
 
-            <TextBlock FontSize="14">
-                <Run Text="CPU Used: "/>
-                <Run Text="{x:Bind ViewModel.CpuUsedText, Mode=OneWay}"
-                     Foreground="{ThemeResource UsedBrush}"
-                     FontWeight="SemiBold"/>
-            </TextBlock>
+            <StackPanel Orientation="Horizontal"
+                        Spacing="24"
+                        HorizontalAlignment="Center">
 
-            <TextBlock FontSize="14">
-                <Run Text="CPU Free: "/>
-                <Run Text="{x:Bind ViewModel.CpuFreeText, Mode=OneWay}"
-                     Foreground="{ThemeResource FreeBrush}"
-                     FontWeight="SemiBold"/>
-            </TextBlock>
+                <TextBlock FontSize="14">
+                    <Run Text="CPU Used: "/>
+                    <Run Text="{x:Bind ViewModel.CpuUsedText, Mode=OneWay}"
+                         Foreground="{ThemeResource UsedBrush}"
+                         FontWeight="SemiBold"/>
+                </TextBlock>
+
+                <TextBlock FontSize="14">
+                    <Run Text="CPU Free: "/>
+                    <Run Text="{x:Bind ViewModel.CpuFreeText, Mode=OneWay}"
+                         Foreground="{ThemeResource FreeBrush}"
+                         FontWeight="SemiBold"/>
+                </TextBlock>
+
+            </StackPanel>
+
+            <localControls:PerformanceGraph
+                Height="120"
+                Width="600"
+                Margin="0,6,0,0"
+                Values="{Binding CpuHistory}"/>
+
         </StackPanel>
 
+
         <StackPanel Grid.Row="2"
-            Orientation="Horizontal"
-            HorizontalAlignment="Center"
-            Spacing="24"
-            Margin="0,8,0,12"
-            Visibility="{x:Bind ViewModel.IsMemoryMode, Mode=OneWay}">
+                    Orientation="Vertical"
+                    HorizontalAlignment="Center"
+                    Spacing="8"
+                    Margin="0,8,0,12"
+                    Visibility="{x:Bind ViewModel.IsMemoryMode, Mode=OneWay}">
 
-            <TextBlock FontSize="14">
-                <Run Text="Memory Used: "/>
-                <Run Text="{x:Bind ViewModel.MemoryUsedText, Mode=OneWay}"
-                     Foreground="{ThemeResource UsedBrush}"
-                     FontWeight="SemiBold"/>
-            </TextBlock>
+            <StackPanel Orientation="Horizontal"
+                        Spacing="24"
+                        HorizontalAlignment="Center">
 
-            <TextBlock FontSize="14">
-                <Run Text="Memory Free: "/>
-                <Run Text="{x:Bind ViewModel.MemoryFreeText, Mode=OneWay}"
-                     Foreground="{ThemeResource FreeBrush}"
-                     FontWeight="SemiBold"/>
-            </TextBlock>
+                <TextBlock FontSize="14">
+                        <Run Text="Memory Used: "/>
+                        <Run Text="{x:Bind ViewModel.MemoryUsedText, Mode=OneWay}"
+                             Foreground="{ThemeResource UsedBrush}"
+                             FontWeight="SemiBold"/>
+                </TextBlock>
 
+                <TextBlock FontSize="14">
+                    <Run Text="Memory Free: "/>
+                    <Run Text="{x:Bind ViewModel.MemoryFreeText, Mode=OneWay}"
+                         Foreground="{ThemeResource FreeBrush}"
+                         FontWeight="SemiBold"/>
+                </TextBlock>
+
+            </StackPanel>
+
+            <localControls:PerformanceGraph
+                Height="120"
+                Width="600"
+                Margin="0,6,0,0"
+                Values="{Binding MemoryHistory}"/>
         </StackPanel>
 
     </Grid>

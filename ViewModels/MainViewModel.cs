@@ -122,6 +122,11 @@ namespace ActivityMonitor.ViewModels
         private string? _sortedColumn;
         private SortState _sortState = SortState.None;
 
+        public ObservableCollection<double> CpuHistory { get; } = new();
+        public ObservableCollection<double> MemoryHistory { get; } = new();
+
+        private const int MaxHistoryPoints = 60;
+
         public MainViewModel()
         {
             EndTaskCommand = new RelayCommand(EndTask);
@@ -181,8 +186,27 @@ namespace ActivityMonitor.ViewModels
             }
 
             ApplySorting();
+
+            if (IsCpuMode)
+            {
+                CpuUsed = _cpuService.CpuUsage();
+                AddPoint(CpuHistory, CpuUsed);
+            }
+
+            if (IsMemoryMode)
+            {
+                MemoryUsed = _memoryService.MemoryUsedPercent();
+                AddPoint(MemoryHistory, MemoryUsed);
+            }
         }
 
+        private void AddPoint(ObservableCollection<double> collection, double value)
+        {
+            if (collection.Count >= MaxHistoryPoints)
+                collection.RemoveAt(0);
+
+            collection.Add(value);
+        }
 
         private void EndTask()
         {
