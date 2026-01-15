@@ -33,21 +33,25 @@ namespace ActivityMonitor.Controls
             if (e.NewValue is ObservableCollection<double> collection)
                 collection.CollectionChanged += control.OnCollectionChanged;
 
-            control.Draw();
+            control.DrawLine();
         }
 
         public PerformanceGraph()
         {
             InitializeComponent();
-            SizeChanged += (_, _) => Draw();
+            SizeChanged += (_, _) =>
+            {
+                DrawGrid();
+                DrawLine();
+            };
         }
 
         private void OnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
-            Draw();
+            DrawLine();
         }
 
-        private void Draw()
+        private void DrawLine()
         {
             GraphCanvas.Children.Clear();
 
@@ -62,19 +66,66 @@ namespace ActivityMonitor.Controls
 
             var polyline = new Polyline
             {
-                Stroke = new SolidColorBrush(Color.FromArgb(255, 90, 200, 90)),
+                Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 0, 120, 215)), 
                 StrokeThickness = 2
             };
 
-            for (int i = 0; i < Values.Count; i++)
+            int count = Values.Count;
+
+            for (int i = 0; i < count; i++)
             {
-                double x = i * (width / (Values.Count - 1));
+                double x = width - ((count - 1 - i) * (width / (count - 1)));
                 double y = height - (Values[i] / 100.0 * height);
 
                 polyline.Points.Add(new Windows.Foundation.Point(x, y));
             }
 
             GraphCanvas.Children.Add(polyline);
+        }
+
+        private void DrawGrid()
+        {
+            if (ActualWidth <= 0 || ActualHeight <= 0)
+                return;
+
+            GridCanvas.Children.Clear();
+
+            int verticalLines = 10;
+            int horizontalLines = 5;
+
+            double width = ActualWidth;
+            double height = ActualHeight;
+
+            var brush = new SolidColorBrush(
+                Windows.UI.Color.FromArgb(50, 100, 100, 100));
+
+            for (int i = 1; i < verticalLines; i++)
+            {
+                double x = i * width / verticalLines;
+                GridCanvas.Children.Add(new Line
+                {
+                    X1 = x,
+                    X2 = x,
+                    Y1 = 0,
+                    Y2 = height,
+                    Stroke = brush,
+                    StrokeThickness = 1
+                });
+            }
+
+            for (int i = 1; i < horizontalLines; i++)
+            {
+                double y = i * height / horizontalLines;
+                GridCanvas.Children.Add(new Line
+                {
+                    X1 = 0,
+                    X2 = width,
+                    Y1 = y,
+                    Y2 = y,
+                    Stroke = brush,
+                    StrokeThickness = 1
+                });
+            }
         }
     }
 }

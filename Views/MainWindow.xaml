@@ -162,7 +162,7 @@
 
             <localControls:PerformanceGraph
                 Height="120"
-                Width="600"
+                Width="450"
                 Margin="0,6,0,0"
                 Values="{Binding CpuHistory}"/>
 
@@ -198,7 +198,7 @@
 
             <localControls:PerformanceGraph
                 Height="120"
-                Width="600"
+                Width="450"
                 Margin="0,6,0,0"
                 Values="{Binding MemoryHistory}"/>
         </StackPanel>
