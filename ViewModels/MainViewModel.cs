@@ -196,9 +196,10 @@ namespace ActivityMonitor.ViewModels
             {
                 _memoryService.Update();
 
-                MemoryUsedGB = _memoryService.UsedMemoryGB;
                 MemoryTotalGB = _memoryService.TotalMemoryGB;
-                AddPoint(MemoryHistory, MemoryUsedGB);
+                MemoryUsedGB = _memoryService.UsedMemoryGB;
+
+                AddPoint(MemoryHistory,(MemoryUsedGB / MemoryTotalGB) * 100);
             }
 
             ApplySorting();

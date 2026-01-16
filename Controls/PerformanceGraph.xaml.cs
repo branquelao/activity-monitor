@@ -2,14 +2,18 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Shapes;
+using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using Windows.UI;
 
 namespace ActivityMonitor.Controls
 {
+
     public sealed partial class PerformanceGraph : UserControl
     {
+        private const int MaxPoints = 60;
+
         public ObservableCollection<double>? Values
         {
             get => (ObservableCollection<double>?)GetValue(ValuesProperty);
@@ -44,6 +48,7 @@ namespace ActivityMonitor.Controls
                 DrawGrid();
                 DrawLine();
             };
+
         }
 
         private void OnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -66,16 +71,22 @@ namespace ActivityMonitor.Controls
 
             var polyline = new Polyline
             {
-                Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 0, 120, 215)), 
+                Stroke = new SolidColorBrush(
+                    Windows.UI.Color.FromArgb(255, 0, 120, 215)),
                 StrokeThickness = 2
             };
 
             int count = Values.Count;
+            double stepX = width / (MaxPoints - 1);
 
             for (int i = 0; i < count; i++)
             {
-                double x = width - ((count - 1 - i) * (width / (count - 1)));
-                double y = height - (Values[i] / 100.0 * height);
+                double x = width - ((count - 1 - i) * stepX);
+
+                double normalized =
+                    MaxValue <= 0 ? 0 : Math.Clamp(Values[i] / MaxValue, 0, 1);
+
+                double y = height - (normalized * height);
 
                 polyline.Points.Add(new Windows.Foundation.Point(x, y));
             }
@@ -126,6 +137,28 @@ namespace ActivityMonitor.Controls
                     StrokeThickness = 1
                 });
             }
+        }
+
+        public double MaxValue
+        {
+            get => (double)GetValue(MaxValueProperty);
+            set => SetValue(MaxValueProperty, value);
+        }
+
+        public static readonly DependencyProperty MaxValueProperty =
+            DependencyProperty.Register(
+                nameof(MaxValue),
+                typeof(double),
+                typeof(PerformanceGraph),
+                new PropertyMetadata(100.0, OnMaxValueChanged)
+            );
+
+        private static void OnMaxValueChanged(
+            DependencyObject d,
+            DependencyPropertyChangedEventArgs e)
+        {
+            var control = (PerformanceGraph)d;
+            control.DrawLine();
         }
     }
 }
