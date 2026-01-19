@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace ActivityMonitor.Services
 {
+    // Reads physical memory information from the OS
     public class MemoryService
     {
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
@@ -26,20 +27,24 @@ namespace ActivityMonitor.Services
 
         public MemoryService()
         {
+            // Initialize struct size for API call
             _mem = new MEMORYSTATUSEX
             {
                 dwLength = (uint)Marshal.SizeOf(typeof(MEMORYSTATUSEX))
             };
         }
 
+        // Updates memory snapshot
         public void Update()
         {
             GlobalMemoryStatusEx(ref _mem);
         }
 
+        // Total installed RAM in GB
         public double TotalMemoryGB =>
             _mem.ullTotalPhys / 1024.0 / 1024 / 1024;
 
+        // Currently used RAM in GB
         public double UsedMemoryGB =>
             (_mem.ullTotalPhys - _mem.ullAvailPhys)
             / 1024.0 / 1024 / 1024;

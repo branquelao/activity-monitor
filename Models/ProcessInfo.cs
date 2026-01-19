@@ -4,12 +4,16 @@ using System.Runtime.CompilerServices;
 
 namespace ActivityMonitor.Models
 {
+    // Holds runtime information about a system process
     public class ProcessInfo : INotifyPropertyChanged
     {
+        // Process ID
         public int Id { get; set; }
 
+        // Process name
         public string Name { get; set; } = string.Empty;
 
+        // CPU usage percentage
         private double _cpu;
         public double Cpu
         {
@@ -24,6 +28,7 @@ namespace ActivityMonitor.Models
             }
         }
 
+        // Memory usage in MB
         private double _memory;
         public double Memory
         {
@@ -38,6 +43,7 @@ namespace ActivityMonitor.Models
             }
         }
 
+        // Total CPU time used by the process
         private TimeSpan _cpuTime;
         public TimeSpan CpuTime
         {
@@ -52,6 +58,7 @@ namespace ActivityMonitor.Models
             }
         }
 
+        // Number of active threads
         private int _threadCount;
         public int ThreadCount
         {
@@ -66,6 +73,7 @@ namespace ActivityMonitor.Models
             }
         }
 
+        // Number of open handles
         private long _handleCount;
         public long HandleCount
         {
@@ -80,6 +88,7 @@ namespace ActivityMonitor.Models
             }
         }
 
+        // User running the process
         private string _user = "-";
         public string User
         {
@@ -94,6 +103,7 @@ namespace ActivityMonitor.Models
             }
         }
 
+        // Process category (Application, System, Service)
         private string _ownerType = "Application";
         public string OwnerType
         {
@@ -107,10 +117,13 @@ namespace ActivityMonitor.Models
                 }
             }
         }
+
+        // Used for CPU delta calculation
         public TimeSpan PreviousCpuTime { get; set; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        // Notifies UI about property changes
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

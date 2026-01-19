@@ -3,6 +3,7 @@ using System.Diagnostics;
 
 namespace ActivityMonitor.Services
 {
+    // Provides smoothed total CPU usage
     public class CpuService
     {
         private readonly PerformanceCounter _cpuCounter;
@@ -17,6 +18,7 @@ namespace ActivityMonitor.Services
                 "_Total"
             );
 
+            // Prime counter to avoid first invalid read
             _cpuCounter.NextValue();
         }
 
@@ -24,6 +26,7 @@ namespace ActivityMonitor.Services
         {
             double raw = _cpuCounter.NextValue();
 
+            // Skip smoothing on first read
             if (!_initialized)
             {
                 _lastValue = raw;
@@ -31,6 +34,7 @@ namespace ActivityMonitor.Services
                 return Math.Round(raw, 2);
             }
 
+            // Apply simple exponential smoothing
             double smoothed = (_lastValue * 0.7) + (raw * 0.3);
             _lastValue = smoothed;
 

@@ -2,14 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
-using System.Management;
 
 namespace ActivityMonitor.Services
 {
+    // Collects and updates running process information
     public class ProcessService
     {
         private readonly Dictionary<int, ProcessInfo> _cache = new();
@@ -27,6 +23,7 @@ namespace ActivityMonitor.Services
                     var cpuTime = p.TotalProcessorTime;
                     var memory = Math.Round(p.WorkingSet64 / 1024.0 / 1024.0, 2);
 
+                    // Create cache entry if missing
                     if (!_cache.TryGetValue(p.Id, out var info))
                     {
                         info = new ProcessInfo
@@ -35,15 +32,17 @@ namespace ActivityMonitor.Services
                             Name = p.ProcessName,
                             PreviousCpuTime = cpuTime
                         };
+
                         ClassifyProcess(info, p);
                         _cache[p.Id] = info;
                     }
 
+                    // Calculate CPU delta
                     var deltaCpu = cpuTime - info.PreviousCpuTime;
 
                     info.Cpu = Math.Round(
                         (deltaCpu.TotalMilliseconds /
-                         (intervalSeconds * 1000 * _processorCount)) * 100,
+                        (intervalSeconds * 1000 * _processorCount)) * 100,
                         2);
 
                     info.Memory = memory;
@@ -56,13 +55,14 @@ namespace ActivityMonitor.Services
                 }
                 catch
                 {
-                    // protected processes
+                    // Ignore protected or inaccessible processes
                 }
             }
 
             return result;
         }
 
+        // Assigns process type and user
         private static void ClassifyProcess(ProcessInfo info, Process process)
         {
             if (process.Id == 4)
@@ -84,6 +84,5 @@ namespace ActivityMonitor.Services
             info.OwnerType = "Application";
             info.User = Environment.UserName;
         }
-
     }
 }

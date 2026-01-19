@@ -4,8 +4,10 @@ using System.Globalization;
 
 namespace ActivityMonitor.Converters
 {
+    // Formats TimeSpan into a readable CPU Time string
     public class TimeSpanConverter : IValueConverter
     {
+        // Culture-independent formatting
         private static readonly CultureInfo Invariant = CultureInfo.InvariantCulture;
 
         public object Convert(object value, Type targetType, object parameter, string language)
@@ -43,6 +45,7 @@ namespace ActivityMonitor.Converters
             return totalSeconds.ToString("F2", Invariant);
         }
 
+        // Convert back is not supported
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
             throw new NotImplementedException();

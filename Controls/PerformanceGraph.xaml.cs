@@ -9,17 +9,20 @@ using Windows.UI;
 
 namespace ActivityMonitor.Controls
 {
-
+    // Custom control used to render a rolling performance graph
     public sealed partial class PerformanceGraph : UserControl
     {
+        // Maximum number of points displayed on the graph
         private const int MaxPoints = 60;
 
+        // Collection containing the historical values to plot
         public ObservableCollection<double>? Values
         {
             get => (ObservableCollection<double>?)GetValue(ValuesProperty);
             set => SetValue(ValuesProperty, value);
         }
 
+        // DependencyProperty to allow binding from the ViewModel
         public static readonly DependencyProperty ValuesProperty =
             DependencyProperty.Register(
                 nameof(Values),
@@ -27,6 +30,7 @@ namespace ActivityMonitor.Controls
                 typeof(PerformanceGraph),
                 new PropertyMetadata(null, OnValuesChanged));
 
+        // Handles changes in the bound collection
         private static void OnValuesChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var control = (PerformanceGraph)d;
@@ -43,19 +47,22 @@ namespace ActivityMonitor.Controls
         public PerformanceGraph()
         {
             InitializeComponent();
+
+            // Redraw when the control is resized
             SizeChanged += (_, _) =>
             {
                 DrawGrid();
                 DrawLine();
             };
-
         }
 
+        // Redraws the graph when data changes
         private void OnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
             DrawLine();
         }
 
+        // Draws the graph line and the filled area below it
         private void DrawLine()
         {
             GraphCanvas.Children.Clear();
@@ -89,23 +96,25 @@ namespace ActivityMonitor.Controls
             int count = Values.Count;
             double stepX = width / (MaxPoints - 1);
 
+            // Start fill from the bottom-left
             polygon.Points.Add(new Windows.Foundation.Point(0, height));
 
             for (int i = 0; i < count; i++)
             {
-                int valueIndex = count - 1 - i;
-
                 double x = i * stepX;
 
                 double normalized =
-                    MaxValue <= 0 ? 0 : Math.Clamp(Values[valueIndex] / MaxValue, 0, 1);
+                    MaxValue <= 0 ? 0 : Math.Clamp(Values[i] / MaxValue, 0, 1);
 
                 double y = height - (normalized * height);
 
-                polyline.Points.Add(new Windows.Foundation.Point(x, y));
-                polygon.Points.Add(new Windows.Foundation.Point(x, y));
+                var point = new Windows.Foundation.Point(x, y);
+
+                polyline.Points.Add(point);
+                polygon.Points.Add(point);
             }
 
+            // Close the filled area at the bottom-right
             polygon.Points.Add(new Windows.Foundation.Point(
                 (count - 1) * stepX, height));
 
@@ -113,6 +122,7 @@ namespace ActivityMonitor.Controls
             GraphCanvas.Children.Add(polyline);
         }
 
+        // Draws a subtle background grid
         private void DrawGrid()
         {
             if (ActualWidth <= 0 || ActualHeight <= 0)
@@ -158,12 +168,14 @@ namespace ActivityMonitor.Controls
             }
         }
 
+        // Maximum value used to scale the graph vertically
         public double MaxValue
         {
             get => (double)GetValue(MaxValueProperty);
             set => SetValue(MaxValueProperty, value);
         }
 
+        // Allows dynamic scaling for CPU, RAM, or other metrics
         public static readonly DependencyProperty MaxValueProperty =
             DependencyProperty.Register(
                 nameof(MaxValue),
@@ -172,6 +184,7 @@ namespace ActivityMonitor.Controls
                 new PropertyMetadata(100.0, OnMaxValueChanged)
             );
 
+        // Redraw when the scale changes
         private static void OnMaxValueChanged(
             DependencyObject d,
             DependencyPropertyChangedEventArgs e)

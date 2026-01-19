@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ActivityMonitor.Models
+﻿namespace ActivityMonitor.Models
 {
+    // Represents a single value in a performance graph
     public class PerformancePoint
     {
         public double Value { get; set; }
     }
 }
+
 
