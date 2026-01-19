@@ -7,7 +7,7 @@
     xmlns:localControls="using:ActivityMonitor.Controls"
     xmlns:converters="using:ActivityMonitor.Converters"
     Title="Activity Monitor">
-
+    
     <!-- Root layout container -->
     <Grid x:Name="RootGrid"
           Background="{ThemeResource AppBackgroundBrush}">
@@ -27,7 +27,6 @@
         <!-- Top action bar -->
         <Grid Grid.Row="0"
               Padding="12">
-
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
@@ -48,7 +47,7 @@
                         Style="{Binding IsCpuMode, Converter={StaticResource HeaderButtonStyleConverter}}"
                         Content="CPU"
                         Command="{Binding CpuCommand}"/>
-
+                
                 <Button x:Name="MemoryButton"
                         Style="{Binding IsMemoryMode, Converter={StaticResource HeaderButtonStyleConverter}}"
                         Content="Memory"
@@ -69,14 +68,15 @@
                            SelectedItem="{Binding SelectedProcess, Mode=TwoWay}">
 
             <controls:DataGrid.Columns>
-
                 <controls:DataGridTextColumn
+                    x:Name="ProcessColumn"
                     Header="Process"
                     Binding="{Binding Name}"
                     Width="*"/>
 
-                <!-- CPU mode columns -->
+                <!-- CPU Mode Columns -->
                 <controls:DataGridTextColumn
+                    x:Name="CpuColumn"
                     Header="CPU (%)"
                     Binding="{Binding Cpu}"
                     Width="120"
@@ -99,15 +99,16 @@
                     Binding="{Binding Id}"
                     Width="90"
                     Visibility="{x:Bind ViewModel.IsCpuMode, Mode=OneWay}" />
-
+                
                 <controls:DataGridTextColumn
                     Header="Type"
                     Binding="{Binding OwnerType}"
                     Width="120"
                     Visibility="{x:Bind ViewModel.IsCpuMode, Mode=OneWay}" />
 
-                <!-- Memory mode columns -->
+                <!-- Memory Mode Columns -->
                 <controls:DataGridTextColumn
+                    x:Name="MemoryColumn"
                     Header="Memory (MB)"
                     Binding="{Binding Memory}"
                     Width="150"
@@ -130,7 +131,7 @@
                     Binding="{Binding Id}"
                     Width="90"
                     Visibility="{x:Bind ViewModel.IsMemoryMode, Mode=OneWay}" />
-
+                
                 <controls:DataGridTextColumn
                     Header="Type"
                     Binding="{Binding OwnerType}"
@@ -153,22 +154,24 @@
 
                 <TextBlock FontSize="14">
                     <Run Text="CPU Used: "/>
-                    <Run Text="{x:Bind ViewModel.CpuUsedText}"
+                    <Run Text="{x:Bind ViewModel.CpuUsedText, Mode=OneWay}"
                          Foreground="{ThemeResource UsedBrush}"
                          FontWeight="SemiBold"/>
                 </TextBlock>
 
                 <TextBlock FontSize="14">
                     <Run Text="CPU Free: "/>
-                    <Run Text="{x:Bind ViewModel.CpuFreeText}"
+                    <Run Text="{x:Bind ViewModel.CpuFreeText, Mode=OneWay}"
                          Foreground="{ThemeResource FreeBrush}"
                          FontWeight="SemiBold"/>
                 </TextBlock>
+
             </StackPanel>
 
             <localControls:PerformanceGraph
                 Height="120"
                 Width="450"
+                Margin="0,6,0,0"
                 Values="{Binding CpuHistory}"
                 MaxValue="100"/>
         </StackPanel>
@@ -186,23 +189,25 @@
                         HorizontalAlignment="Center">
 
                 <TextBlock FontSize="14">
-                    <Run Text="Memory Used: "/>
-                    <Run Text="{x:Bind ViewModel.MemoryUsedText}"
-                         Foreground="{ThemeResource UsedBrush}"
-                         FontWeight="SemiBold"/>
+                        <Run Text="Memory Used: "/>
+                        <Run Text="{x:Bind ViewModel.MemoryUsedText, Mode=OneWay}"
+                             Foreground="{ThemeResource UsedBrush}"
+                             FontWeight="SemiBold"/>
                 </TextBlock>
 
                 <TextBlock FontSize="14">
                     <Run Text="Total Memory: "/>
-                    <Run Text="{x:Bind ViewModel.MemoryTotalText}"
+                    <Run Text="{x:Bind ViewModel.MemoryTotalText, Mode=OneWay}"
                          Foreground="{ThemeResource FreeBrush}"
                          FontWeight="SemiBold"/>
                 </TextBlock>
+
             </StackPanel>
 
             <localControls:PerformanceGraph
                 Height="120"
                 Width="450"
+                Margin="0,6,0,0"
                 Values="{Binding MemoryHistory}"
                 MaxValue="100"/>
         </StackPanel>
