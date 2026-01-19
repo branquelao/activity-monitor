@@ -69,28 +69,47 @@ namespace ActivityMonitor.Controls
             if (width <= 0 || height <= 0)
                 return;
 
+            var lineBrush = new SolidColorBrush(
+                Windows.UI.Color.FromArgb(255, 0, 120, 215));
+
+            var fillBrush = new SolidColorBrush(
+                Windows.UI.Color.FromArgb(50, 0, 120, 215));
+
             var polyline = new Polyline
             {
-                Stroke = new SolidColorBrush(
-                    Windows.UI.Color.FromArgb(255, 0, 120, 215)),
+                Stroke = lineBrush,
                 StrokeThickness = 2
+            };
+
+            var polygon = new Polygon
+            {
+                Fill = fillBrush
             };
 
             int count = Values.Count;
             double stepX = width / (MaxPoints - 1);
 
+            polygon.Points.Add(new Windows.Foundation.Point(0, height));
+
             for (int i = 0; i < count; i++)
             {
-                double x = width - ((count - 1 - i) * stepX);
+                int valueIndex = count - 1 - i;
+
+                double x = i * stepX;
 
                 double normalized =
-                    MaxValue <= 0 ? 0 : Math.Clamp(Values[i] / MaxValue, 0, 1);
+                    MaxValue <= 0 ? 0 : Math.Clamp(Values[valueIndex] / MaxValue, 0, 1);
 
                 double y = height - (normalized * height);
 
                 polyline.Points.Add(new Windows.Foundation.Point(x, y));
+                polygon.Points.Add(new Windows.Foundation.Point(x, y));
             }
 
+            polygon.Points.Add(new Windows.Foundation.Point(
+                (count - 1) * stepX, height));
+
+            GraphCanvas.Children.Add(polygon);
             GraphCanvas.Children.Add(polyline);
         }
 

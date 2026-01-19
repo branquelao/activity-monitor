@@ -166,7 +166,6 @@
                 Margin="0,6,0,0"
                 Values="{Binding CpuHistory}"
                 MaxValue="100"/>
-
         </StackPanel>
 
 
