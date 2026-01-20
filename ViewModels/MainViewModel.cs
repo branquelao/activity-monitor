@@ -35,8 +35,8 @@ namespace ActivityMonitor.ViewModels
         private readonly DispatcherTimer _timer;
 
         // Currently selected process
-        private ProcessInfo? _selectedProcess;
-        public ProcessInfo? SelectedProcess
+        private GroupedProcessInfo? _selectedProcess;
+        public GroupedProcessInfo? SelectedProcess
         {
             get => _selectedProcess;
             set
@@ -54,7 +54,7 @@ namespace ActivityMonitor.ViewModels
         public bool IsMemoryMode => CurrentMode == Viewmode.Memory;
 
         // Process list shown in the grid
-        public ObservableCollection<ProcessInfo> Processes { get; } = new();
+        public ObservableCollection<GroupedProcessInfo> Processes { get; } = new();
 
         // Current view mode
         private Viewmode _currentMode = Viewmode.Cpu;
@@ -170,22 +170,34 @@ namespace ActivityMonitor.ViewModels
         // Refreshes processes, CPU and memory data
         private void UpdateProcesses()
         {
-            int? selectedId = SelectedProcess?.Id;
+            var rawProcesses = _service.GetProcesses(1);
 
-            var list = _service.GetProcesses(1)
-                               .ToDictionary(p => p.Id);
+            // Group processes by name
+            var grouped = rawProcesses
+                .GroupBy(p => p.Name)
+                .Select(g => new GroupedProcessInfo
+                {
+                    Name = $"{g.Key} ({g.Count()})",
+                    Pids = g.Select(p => p.Id).ToList(),
+                    Cpu = g.Sum(p => p.Cpu),
+                    Memory = g.Sum(p => p.Memory),
+                    CpuTime = TimeSpan.FromTicks(g.Sum(p => p.CpuTime.Ticks)),
+                    ThreadCount = g.Sum(p => p.ThreadCount),
+                    HandleCount = g.Sum(p => p.HandleCount)
+                })
+                .ToList();
 
-            // Remove exited processes
+            // Remove old entries
             for (int i = Processes.Count - 1; i >= 0; i--)
             {
-                if (!list.ContainsKey(Processes[i].Id))
+                if (!grouped.Any(p => p.Name == Processes[i].Name))
                     Processes.RemoveAt(i);
             }
 
-            // Update or add processes
-            foreach (var p in list.Values)
+            // Update or add grouped processes
+            foreach (var p in grouped)
             {
-                var existing = Processes.FirstOrDefault(x => x.Id == p.Id);
+                var existing = Processes.FirstOrDefault(x => x.Name == p.Name);
 
                 if (existing == null)
                 {
@@ -198,12 +210,9 @@ namespace ActivityMonitor.ViewModels
                     existing.CpuTime = p.CpuTime;
                     existing.ThreadCount = p.ThreadCount;
                     existing.HandleCount = p.HandleCount;
+                    existing.Pids = p.Pids;
                 }
             }
-
-            // Restore selection
-            if (selectedId.HasValue)
-                SelectedProcess = Processes.FirstOrDefault(p => p.Id == selectedId);
 
             // CPU mode update
             if (IsCpuMode)
@@ -235,25 +244,28 @@ namespace ActivityMonitor.ViewModels
             collection.Add(value);
         }
 
-        // Terminates the selected process
+        // Terminates all processes in the selected group
         private void EndTask()
         {
             if (SelectedProcess is null)
                 return;
 
-            try
+            foreach (var pid in SelectedProcess.Pids)
             {
-                var process = System.Diagnostics.Process.GetProcessById(SelectedProcess.Id);
-                process.Kill();
-                process.WaitForExit();
-            }
-            catch
-            {
-                // Access denied or protected process
+                try
+                {
+                    var process = System.Diagnostics.Process.GetProcessById(pid);
+                    process.Kill();
+                }
+                catch
+                {
+                    // Access denied or process already exited
+                }
             }
 
             UpdateProcesses();
         }
+
 
         // Handles column sorting state
         public void ApplyColumnSort(string column)
@@ -282,7 +294,7 @@ namespace ActivityMonitor.ViewModels
         // Applies sorting to the process list
         private void ApplySorting()
         {
-            IEnumerable<ProcessInfo> ordered;
+            IEnumerable<GroupedProcessInfo> ordered;
 
             if (_sortState == SortState.None || _sortedColumn == null)
             {
@@ -292,17 +304,15 @@ namespace ActivityMonitor.ViewModels
             }
             else
             {
-                Func<ProcessInfo, object> selector = _sortedColumn switch
+                Func<GroupedProcessInfo, object> selector = _sortedColumn switch
                 {
                     "Process" => p => p.Name,
                     "CPU (%)" => p => p.Cpu,
                     "CPU Time" => p => p.CpuTime,
                     "Threads" => p => p.ThreadCount,
-                    "PID" => p => p.Id,
                     "Memory (MB)" => p => p.Memory,
                     "Handles" => p => p.HandleCount,
-                    "Type" => p => p.OwnerType,
-                    _ => p => p.Id
+                    _ => p => p.Name
                 };
 
                 ordered = _sortState == SortState.Ascending
