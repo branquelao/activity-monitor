@@ -89,6 +89,21 @@ namespace ActivityMonitor.Models
             }
         }
 
+        // Indicates whether the grouped process is application or background
+        private string _executionType = "Background";
+        public string ExecutionType
+        {
+            get => _executionType;
+            set
+            {
+                if (_executionType != value)
+                {
+                    _executionType = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         // Number of processes in this group
         public int ProcessCount => Pids.Count;
 

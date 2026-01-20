@@ -183,7 +183,11 @@ namespace ActivityMonitor.ViewModels
                     Memory = g.Sum(p => p.Memory),
                     CpuTime = TimeSpan.FromTicks(g.Sum(p => p.CpuTime.Ticks)),
                     ThreadCount = g.Sum(p => p.ThreadCount),
-                    HandleCount = g.Sum(p => p.HandleCount)
+                    HandleCount = g.Sum(p => p.HandleCount),
+
+                    ExecutionType = g.Any(p => p.ExecutionType == "Application")
+                        ? "Application"
+                        : "Background"
                 })
                 .ToList();
 
@@ -312,6 +316,7 @@ namespace ActivityMonitor.ViewModels
                     "Threads" => p => p.ThreadCount,
                     "Memory (MB)" => p => p.Memory,
                     "Handles" => p => p.HandleCount,
+                    "Type" => p => p.ExecutionType,
                     _ => p => p.Name
                 };
 

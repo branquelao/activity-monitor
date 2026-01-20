@@ -103,16 +103,16 @@ namespace ActivityMonitor.Models
             }
         }
 
-        // Process category (Application, System, Service)
-        private string _ownerType = "Application";
-        public string OwnerType
+        // Indicates whether the process runs in foreground or background
+        private string _executionType = "Background";
+        public string ExecutionType
         {
-            get => _ownerType;
+            get => _executionType;
             set
             {
-                if (_ownerType != value)
+                if (_executionType != value)
                 {
-                    _ownerType = value;
+                    _executionType = value;
                     OnPropertyChanged();
                 }
             }

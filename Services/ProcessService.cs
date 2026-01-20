@@ -62,26 +62,37 @@ namespace ActivityMonitor.Services
             return result;
         }
 
-        // Assigns process type and user
+        // Assigns execution type and user
         private static void ClassifyProcess(ProcessInfo info, Process process)
         {
+            // Kernel process
             if (process.Id == 4)
             {
-                info.OwnerType = "Kernel";
+                info.ExecutionType = "Background";
                 info.User = "SYSTEM";
                 return;
             }
 
+            // Well-known system and service processes
             if (process.ProcessName.Equals("svchost", StringComparison.OrdinalIgnoreCase) ||
                 process.ProcessName.Equals("services", StringComparison.OrdinalIgnoreCase) ||
                 process.ProcessName.Equals("lsass", StringComparison.OrdinalIgnoreCase))
             {
-                info.OwnerType = "Service";
+                info.ExecutionType = "Background";
                 info.User = "SYSTEM";
                 return;
             }
 
-            info.OwnerType = "Application";
+            // Processes with a visible main window are considered applications
+            if (process.MainWindowHandle != IntPtr.Zero)
+            {
+                info.ExecutionType = "Application";
+                info.User = Environment.UserName;
+                return;
+            }
+
+            // Default fallback
+            info.ExecutionType = "Background";
             info.User = Environment.UserName;
         }
     }
