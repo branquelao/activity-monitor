@@ -1,99 +1,101 @@
 # 🖥️ Activity Monitor (Windows)
 
-A desktop application for Windows inspired by **macOS Activity Monitor** and **Windows Task Manager**, developed in **C# with WinUI 3**.
-
-The project focuses on **real-time process monitoring**, **UI stability during frequent updates**, and a **clean, native-like user experience**, following solid MVVM practices.
+A **Windows desktop application** inspired by **macOS Activity Monitor** and **Windows Task Manager**, developed in **C# with WinUI 3**.
 
 ---
 
 ## ✨ Features
 
 ### 📊 CPU Monitoring
-- Per-process CPU usage (%)
+- Per-process **CPU usage (%)**
 - **CPU Time** formatted in Activity Monitor style (`mm:ss.ms`)
 - Thread count per process
-- Process ID (PID)
 - Process type classification:
-  - `Application` – user-launched processes
-  - `System` – Windows system processes
-  - `Service` – Windows services
+  - **Application** – processes that have at least one foreground instance
+  - **Background** – processes running only in background
 - Global CPU usage:
   - **Used (%)**
   - **Free (%)**
-- Dynamic sorting by any column (ascending / descending / reset)
+- Dynamic column sorting:
+  - Ascending
+  - Descending
+  - Reset to default
+- Sorting preserved during real-time refresh
 
 ---
 
 ### 🧠 Memory Monitoring
-- Per-process memory usage (MB)
+- Per-process **memory usage (MB)**
 - Thread count
 - Handle count
-- Process ID (PID)
-- Process type classification
+- Process type classification (Application / Background)
 - Global memory usage:
   - **Used (%)**
-  - **Free (%)**
+  - **Total memory**
 - Independent sorting logic for Memory mode
 
 ---
 
 ### 🎨 User Interface
-- WinUI 3 modern desktop UI
-- Light & Dark themes with dynamic switching
-- Theme-aware colors using `ThemeDictionaries`
-- Dynamic DataGrid:
-  - CPU and Memory modes with column switching
-  - Real-time updates **without losing scroll position or selection**
-  - Stable sorting preserved during refresh
-- Custom converters:
-  - `TimeSpan → string` (CPU Time formatting)
-  - Button state → style converter (active / inactive)
-- Responsive layout with minimum window size constraints
+- Modern **WinUI 3** desktop UI
+- CPU and Memory modes with dynamic column switching
+- CommunityToolkit **DataGrid**
+- Real-time updates **without losing**:
+  - Scroll position
+  - Selected process
+  - Sorting order
+- Custom UI components:
+  - Performance graphs
+  - Theme-aware colors and brushes
+- Clean, native-like Windows design
 
 ---
 
 ### ⚙️ Process Control
-- Select a process directly from the DataGrid
+- Process selection directly from the DataGrid
 - **End Task** functionality
-- Safe handling of protected processes and access denial
+- Safe handling of:
+  - Protected processes
+  - Access denied scenarios
+- Robust exception handling to prevent UI freezes
 
 ---
 
 ## 🧩 Architecture
 
 - **MVVM pattern**
-- Clear separation of responsibilities:
-  - Model → `ProcessInfo`
-  - ViewModel → `MainViewModel`
-  - View → XAML
-- Services-based architecture:
-  - `ProcessService` – process enumeration and metrics
-  - `CpuService` – global CPU usage calculation
-  - `MemoryService` – global memory usage calculation
+- Clear separation of concerns:
+  - **Model** → `ProcessInfo`
+  - **ViewModel** → `MainViewModel`
+  - **View** → XAML (WinUI 3)
+- Service-oriented design:
+  - `ProcessService` – process enumeration and metrics calculation
+  - `CpuService` – global CPU usage
+  - `MemoryService` – global memory usage
 - Incremental updates using:
-  - `ObservableCollection<ProcessInfo>`
-  - PID-based reconciliation (no full list resets)
-- Efficient UI updates with `INotifyPropertyChanged`
-- Commands via custom `RelayCommand`
+  - `ObservableCollection<T>`
+  - PID-based caching
+- Efficient UI synchronization with `INotifyPropertyChanged`
+- Command handling via custom `RelayCommand`
 
 ---
 
 ## 🚀 Performance & Stability
 
 - Real-time refresh using `DispatcherTimer` (1-second interval)
-- Incremental updates (no `Clear()` or full collection rebuilds)
-- Selection and scroll position preserved during updates
-- Low UI overhead even with frequent refresh cycles
-- Sorting implemented via collection reordering (`Move`) instead of recreation
+- Incremental updates (no full collection rebuilds)
+- Collection reconciliation instead of `Clear()` operations
+- Stable UI even under frequent updates
+- Sorting implemented via collection reordering (`Move`) for minimal UI overhead
 
 ---
 
 ## 🎨 Theming System
 
-- Centralized color management using `ResourceDictionary`
-- Separate Light and Dark palettes
+- Centralized theming using `ResourceDictionary`
 - Theme-aware brushes via `ThemeResource`
-- Runtime theme switching without application restart
+- Clean separation between UI logic and visual resources
+- Ready for future Light/Dark theme expansion
 
 ---
 
@@ -102,8 +104,8 @@ The project focuses on **real-time process monitoring**, **UI stability during f
 - C#
 - .NET
 - WinUI 3
-- CommunityToolkit WinUI DataGrid
-- MVVM architecture
+- CommunityToolkit WinUI (DataGrid)
+- MVVM Architecture
 
 ---
 
