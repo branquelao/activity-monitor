@@ -20,6 +20,12 @@
             <SolidColorBrush x:Key="UsedBrush" Color="#C42B1C"/>
             <SolidColorBrush x:Key="FreeBrush" Color="#0F7B0F"/>
 
+            <!-- Delete button -->
+            <SolidColorBrush x:Key="DeleteButtonBackground" Color="#C42B1C"/>
+            <SolidColorBrush x:Key="DeleteButtonPointerOver" Color="#B3261E"/>
+            <SolidColorBrush x:Key="DeleteButtonPressed" Color="#8B1D18"/>
+            <SolidColorBrush x:Key="DeleteButtonForeground" Color="#FFFFFF"/>
+
         </ResourceDictionary>
 
         <!-- Dark theme colors -->
@@ -36,6 +42,12 @@
             <!-- Performance indicators -->
             <SolidColorBrush x:Key="UsedBrush" Color="#FF6A5E"/>
             <SolidColorBrush x:Key="FreeBrush" Color="#5EDB8C"/>
+
+            <!-- Delete button -->
+            <SolidColorBrush x:Key="DeleteButtonBackground" Color="#FF6A5E"/>
+            <SolidColorBrush x:Key="DeleteButtonPointerOver" Color="#E05A50"/>
+            <SolidColorBrush x:Key="DeleteButtonPressed" Color="#B7443C"/>
+            <SolidColorBrush x:Key="DeleteButtonForeground" Color="#FFFFFF"/>
 
         </ResourceDictionary>
 

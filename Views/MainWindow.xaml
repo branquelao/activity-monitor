@@ -40,7 +40,7 @@
 
                 <Button x:Name="EndButton"
                         Content="X"
-                        Background="Red"
+                        Style="{StaticResource DeleteButtonStyle}"
                         Command="{Binding EndTaskCommand}"/>
 
                 <Button x:Name="CpuButton"
