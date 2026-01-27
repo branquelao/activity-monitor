@@ -152,6 +152,23 @@ namespace ActivityMonitor.ViewModels
 
         private const int MaxHistoryPoints = 60;
 
+        private string _searchText = string.Empty;
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                if (_searchText == value)
+                    return;
+
+                _searchText = value;
+                OnPropertyChanged();
+                ApplyFilterAndSorting();
+            }
+        }
+
+        public ObservableCollection<GroupedProcessInfo> FilteredProcesses { get; } = new();
+
         public MainViewModel()
         {
             EndTaskCommand = new RelayCommand(EndTask);
@@ -235,8 +252,8 @@ namespace ActivityMonitor.ViewModels
 
                 AddPoint(MemoryHistory, (MemoryUsedGB / MemoryTotalGB) * 100);
             }
-
-            ApplySorting();
+            
+            ApplyFilterAndSorting();
         }
 
         // Adds a rolling value to a graph history
@@ -293,6 +310,49 @@ namespace ActivityMonitor.ViewModels
             }
 
             ApplySorting();
+        }
+
+
+        private void ApplyFilterAndSorting()
+        {
+            IEnumerable<GroupedProcessInfo> query = Processes;
+
+            if (!string.IsNullOrWhiteSpace(SearchText))
+            {
+                query = query.Where(p =>
+                    p.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (_sortState == SortState.None || _sortedColumn == null)
+            {
+                query = CurrentMode == Viewmode.Cpu
+                    ? query.OrderByDescending(p => p.Cpu)
+                    : query.OrderByDescending(p => p.Memory);
+            }
+            else
+            {
+                Func<GroupedProcessInfo, object> selector = _sortedColumn switch
+                {
+                    "Process" => p => p.Name,
+                    "CPU (%)" => p => p.Cpu,
+                    "CPU Time" => p => p.CpuTime,
+                    "Threads" => p => p.ThreadCount,
+                    "Memory (MB)" => p => p.Memory,
+                    "Handles" => p => p.HandleCount,
+                    "Type" => p => p.ExecutionType,
+                    _ => p => p.Name
+                };
+
+                query = _sortState == SortState.Ascending
+                    ? query.OrderBy(selector)
+                    : query.OrderByDescending(selector);
+            }
+
+            var list = query.ToList();
+
+            FilteredProcesses.Clear();
+            foreach (var item in list)
+                FilteredProcesses.Add(item);
         }
 
         // Applies sorting to the process list

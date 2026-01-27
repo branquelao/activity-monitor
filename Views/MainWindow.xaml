@@ -53,12 +53,20 @@
                         Content="Memory"
                         Command="{Binding MemoryCommand}"/>
             </StackPanel>
+
+            <!-- Search bar -->
+            <AutoSuggestBox
+                Grid.Column="2"
+                Width="220"
+                PlaceholderText="Search process..."
+                Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                HorizontalAlignment="Right"/>
         </Grid>
 
         <!-- Process list -->
         <controls:DataGrid x:Name="ProcessGrid"
                            Grid.Row="1"
-                           ItemsSource="{Binding Processes}"
+                           ItemsSource="{Binding FilteredProcesses}"
                            AutoGenerateColumns="False"
                            IsReadOnly="True"
                            HeadersVisibility="Column"

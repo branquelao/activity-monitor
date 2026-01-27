@@ -3,7 +3,8 @@
     x:Class="ActivityMonitor.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:ActivityMonitor.Converters">
+    xmlns:local="using:ActivityMonitor.Converters"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls">
 
     <Application.Resources>
         <ResourceDictionary>
@@ -13,7 +14,7 @@
                 <!-- Other merged dictionaries here -->
             </ResourceDictionary.MergedDictionaries>
             <!-- Other app resources here -->
-            
+
             <!-- Normal Button Style -->
             <Style x:Key="HeaderButtonInactive"
                    TargetType="Button">
@@ -46,6 +47,10 @@
             x:Key="HeaderButtonStyleConverter"
             ActiveStyle="{StaticResource HeaderButtonActive}"
             InactiveStyle="{StaticResource HeaderButtonInactive}" />
+
+            <!-- Selected Row Color -->
+            <SolidColorBrush x:Key="DataGridRowSelectedBackground"
+                 Color="#0076D7"/>
 
         </ResourceDictionary>
     </Application.Resources>

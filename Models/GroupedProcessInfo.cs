@@ -14,6 +14,9 @@ namespace ActivityMonitor.Models
         // List of process IDs that belong to this group
         public List<int> Pids { get; set; } = new();
 
+        // Identifier key for the grouped process
+        public string ProcessKey { get; set; } = string.Empty;
+
         // CPU usage percentage (summed)
         private double _cpu;
         public double Cpu
@@ -56,7 +59,7 @@ namespace ActivityMonitor.Models
                     _cpuTime = value;
                     OnPropertyChanged();
                 }
-            }
+            } 
         }
 
         // Total number of active threads
