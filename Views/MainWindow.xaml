@@ -86,9 +86,9 @@
                 <controls:DataGridTextColumn
                     x:Name="CpuColumn"
                     Header="CPU (%)"
-                    Binding="{Binding Cpu}"
+                    Binding="{Binding CpuDisplay}"
                     Width="100"
-                    Visibility="{x:Bind ViewModel.IsCpuMode, Mode=OneWay}"/>
+                    Visibility="{x:Bind ViewModel.IsCpuMode, Mode=OneWay}" />
 
                 <controls:DataGridTextColumn
                     Header="CPU Time"
@@ -112,7 +112,7 @@
                 <controls:DataGridTextColumn
                     x:Name="MemoryColumn"
                     Header="Memory (MB)"
-                    Binding="{Binding Memory}"
+                    Binding="{Binding MemoryDisplay}"
                     Width="140"
                     Visibility="{x:Bind ViewModel.IsMemoryMode, Mode=OneWay}"/>
 

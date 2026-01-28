@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 
 namespace ActivityMonitor.Models
@@ -18,8 +19,10 @@ namespace ActivityMonitor.Models
         public string ProcessKey { get; set; } = string.Empty;
 
         // Base name of the process executable
-        public string BaseName { get; set; }
+        public string BaseName { get; set; } = string.Empty;
 
+        // CPU usage percentage formatted for display
+        public string CpuDisplay => Cpu.ToString("F1", CultureInfo.InvariantCulture);
 
         // CPU usage percentage (summed)
         private double _cpu;
@@ -46,8 +49,20 @@ namespace ActivityMonitor.Models
                 if (_memory != value)
                 {
                     _memory = value;
-                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(MemoryDisplay));
                 }
+            }
+        }
+
+        // Memory usage formatted for display
+        public string MemoryDisplay
+        {
+            get
+            {
+                if (Memory >= 1024)
+                    return $"{(Memory / 1024).ToString("F2", CultureInfo.InvariantCulture)} GB";
+
+                return $"{Memory.ToString("F2", CultureInfo.InvariantCulture)} MB";
             }
         }
 
