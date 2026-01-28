@@ -126,6 +126,12 @@
             ActiveStyle="{StaticResource HeaderButtonActive}"
             InactiveStyle="{StaticResource HeaderButtonInactive}" />
 
+            <!--Right Aligned Cell Style -->
+            <Style x:Key="RightAlignedCell"
+                   TargetType="TextBlock">
+                <Setter Property="TextAlignment" Value="Right"/>
+            </Style>
+
             <!-- Selected Row Color -->
             <SolidColorBrush x:Key="DataGridRowSelectedBackground"
                  Color="#0076D7"/>
