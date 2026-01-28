@@ -187,6 +187,7 @@ namespace ActivityMonitor.ViewModels
         // Refreshes processes, CPU and memory data
         private void UpdateProcesses()
         {
+            string? selectedProcessName = SelectedProcess?.Name;
             var rawProcesses = _service.GetProcesses(1);
 
             // Group processes by name
@@ -194,6 +195,7 @@ namespace ActivityMonitor.ViewModels
                 .GroupBy(p => p.Name)
                 .Select(g => new GroupedProcessInfo
                 {
+                    BaseName = g.Key,
                     Name = $"{g.Key} ({g.Count()})",
                     Pids = g.Select(p => p.Id).ToList(),
                     Cpu = g.Sum(p => p.Cpu),
@@ -254,6 +256,12 @@ namespace ActivityMonitor.ViewModels
             }
             
             ApplyFilterAndSorting();
+
+            if (selectedProcessName != null)
+            {
+                SelectedProcess = FilteredProcesses
+                    .FirstOrDefault(p => p.Name == selectedProcessName);
+            }
         }
 
         // Adds a rolling value to a graph history

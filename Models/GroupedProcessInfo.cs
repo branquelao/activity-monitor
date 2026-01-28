@@ -17,6 +17,10 @@ namespace ActivityMonitor.Models
         // Identifier key for the grouped process
         public string ProcessKey { get; set; } = string.Empty;
 
+        // Base name of the process executable
+        public string BaseName { get; set; }
+
+
         // CPU usage percentage (summed)
         private double _cpu;
         public double Cpu
