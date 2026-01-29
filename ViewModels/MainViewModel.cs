@@ -68,9 +68,6 @@ namespace ActivityMonitor.ViewModels
 
                 _currentMode = value;
 
-                _sortedColumn = null;
-                _sortState = SortState.None;
-
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(IsCpuMode));
                 OnPropertyChanged(nameof(IsMemoryMode));
@@ -143,8 +140,18 @@ namespace ActivityMonitor.ViewModels
         public string MemoryTotalText => $"{MemoryTotalGB:F1} GB";
 
         // Sorting state
-        private string? _sortedColumn;
-        private SortState _sortState = SortState.None;
+        private string? _sortedColumn = "Process";
+        private SortState _sortState = SortState.Ascending;
+
+        public SortState GetCurrentSortState()
+        {
+            return _sortState;
+        }
+
+        public string? GetSortedColumn()
+        {
+            return _sortedColumn;
+        }
 
         // Rolling history for graphs
         public ObservableCollection<double> CpuHistory { get; } = new();
@@ -306,20 +313,13 @@ namespace ActivityMonitor.ViewModels
             }
             else
             {
-                _sortState = _sortState switch
-                {
-                    SortState.Descending => SortState.Ascending,
-                    SortState.Ascending => SortState.None,
-                    _ => SortState.Descending
-                };
-
-                if (_sortState == SortState.None)
-                    _sortedColumn = null;
+                _sortState = _sortState == SortState.Descending
+                    ? SortState.Ascending
+                    : SortState.Descending;
             }
 
             ApplySorting();
         }
-
 
         private void ApplyFilterAndSorting()
         {
@@ -331,30 +331,21 @@ namespace ActivityMonitor.ViewModels
                     p.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
             }
 
-            if (_sortState == SortState.None || _sortedColumn == null)
+            Func<GroupedProcessInfo, object> selector = _sortedColumn switch
             {
-                query = CurrentMode == Viewmode.Cpu
-                    ? query.OrderByDescending(p => p.Cpu)
-                    : query.OrderByDescending(p => p.Memory);
-            }
-            else
-            {
-                Func<GroupedProcessInfo, object> selector = _sortedColumn switch
-                {
-                    "Process" => p => p.Name,
-                    "CPU (%)" => p => p.Cpu,
-                    "CPU Time" => p => p.CpuTime,
-                    "Threads" => p => p.ThreadCount,
-                    "Memory (MB)" => p => p.Memory,
-                    "Handles" => p => p.HandleCount,
-                    "Type" => p => p.ExecutionType,
-                    _ => p => p.Name
-                };
+                "Process" => p => p.Name,
+                "CPU (%)" => p => p.Cpu,
+                "CPU Time" => p => p.CpuTime,
+                "Threads" => p => p.ThreadCount,
+                "Memory (MB)" => p => p.Memory,
+                "Handles" => p => p.HandleCount,
+                "Type" => p => p.ExecutionType,
+                _ => p => p.Name
+            };
 
-                query = _sortState == SortState.Ascending
-                    ? query.OrderBy(selector)
-                    : query.OrderByDescending(selector);
-            }
+            query = _sortState == SortState.Ascending
+                ? query.OrderBy(selector)
+                : query.OrderByDescending(selector);
 
             var list = query.ToList();
 
@@ -368,30 +359,21 @@ namespace ActivityMonitor.ViewModels
         {
             IEnumerable<GroupedProcessInfo> ordered;
 
-            if (_sortState == SortState.None || _sortedColumn == null)
+            Func<GroupedProcessInfo, object> selector = _sortedColumn switch
             {
-                ordered = CurrentMode == Viewmode.Cpu
-                    ? Processes.OrderByDescending(p => p.Cpu)
-                    : Processes.OrderByDescending(p => p.Memory);
-            }
-            else
-            {
-                Func<GroupedProcessInfo, object> selector = _sortedColumn switch
-                {
-                    "Process" => p => p.Name,
-                    "CPU (%)" => p => p.Cpu,
-                    "CPU Time" => p => p.CpuTime,
-                    "Threads" => p => p.ThreadCount,
-                    "Memory (MB)" => p => p.Memory,
-                    "Handles" => p => p.HandleCount,
-                    "Type" => p => p.ExecutionType,
-                    _ => p => p.Name
-                };
+                "Process" => p => p.Name,
+                "CPU (%)" => p => p.Cpu,
+                "CPU Time" => p => p.CpuTime,
+                "Threads" => p => p.ThreadCount,
+                "Memory (MB)" => p => p.Memory,
+                "Handles" => p => p.HandleCount,
+                "Type" => p => p.ExecutionType,
+                _ => p => p.Name
+            };
 
-                ordered = _sortState == SortState.Ascending
-                    ? Processes.OrderBy(selector)
-                    : Processes.OrderByDescending(selector);
-            }
+            ordered = _sortState == SortState.Ascending
+                ? Processes.OrderBy(selector)
+                : Processes.OrderByDescending(selector);
 
             var list = ordered.ToList();
 

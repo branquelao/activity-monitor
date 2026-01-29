@@ -120,6 +120,29 @@
                 </Setter>
             </Style>
 
+            <!-- DataGrid Column Header Arrows -->
+            <DataTemplate x:Key="SortableHeaderTemplate">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0"
+                               Text="{Binding}"
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center"/>
+
+                    <TextBlock x:Name="SortArrow"
+                               Grid.Column="1"
+                               FontFamily="Segoe MDL2 Assets"
+                               FontSize="12"
+                               Margin="8,0,0,0"
+                               VerticalAlignment="Center"
+                               Visibility="Collapsed"/>
+                </Grid>
+            </DataTemplate>
+
             <!-- Converter -->
             <local:ButtonConverter
             x:Key="HeaderButtonStyleConverter"

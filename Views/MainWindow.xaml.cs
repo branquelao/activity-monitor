@@ -28,6 +28,11 @@ namespace ActivityMonitor
 
             // Set initial and minimum window size
             SetWindowsSize(900, 600, 700, 450);
+
+            ProcessGrid.Loaded += (s, e) =>
+            {
+                UpdateSortIndicators("Process");
+            };
         }
 
         private void MainWindow_Activated(object sender, WindowActivatedEventArgs e)
@@ -64,9 +69,35 @@ namespace ActivityMonitor
 
         private void ProcessSorting(object sender, DataGridColumnEventArgs e)
         {
-            // Forward column sorting to the ViewModel
-            string column = e.Column.Header?.ToString() ?? string.Empty;
-            ViewModel.ApplyColumnSort(column);
+            string columnName = e.Column.Header?.ToString() ?? "";
+            columnName = columnName.Replace(" ▲", "").Replace(" ▼", "");
+
+            ViewModel.ApplyColumnSort(columnName);
+            UpdateSortIndicators(columnName);
+        }
+
+        private void UpdateSortIndicators(string sortedColumn)
+        {
+            if (ProcessGrid.Columns == null || ProcessGrid.Columns.Count == 0)
+                return;
+
+            foreach (var column in ProcessGrid.Columns)
+            {
+                string headerText = column.Header?.ToString() ?? "";
+
+                headerText = headerText.Replace(" ▲", "").Replace(" ▼", "");
+
+                if (headerText == sortedColumn)
+                {
+                    var sortState = ViewModel.GetCurrentSortState();
+                    string arrow = sortState == SortState.Ascending ? " ▲" : " ▼";
+                    column.Header = headerText + arrow;
+                }
+                else
+                {
+                    column.Header = headerText;
+                }
+            }
         }
     }
 }
