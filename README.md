@@ -7,7 +7,7 @@ A **Windows desktop application** inspired by **macOS Activity Monitor** and **W
 ## ✨ Features
 
 ### 📊 CPU Monitoring
-- Per-process **CPU usage (%)**
+- Per-process **CPU usage (%)** (formatted with 1 decimal)
 - **CPU Time** formatted in Activity Monitor style (`mm:ss.ms`)
 - Thread count per process
 - Process type classification:
@@ -25,14 +25,29 @@ A **Windows desktop application** inspired by **macOS Activity Monitor** and **W
 ---
 
 ### 🧠 Memory Monitoring
-- Per-process **memory usage (MB)**
+- Per-process **memory usage with adaptive units**:
+  - Displays **MB** for values below 1 GB
+  - Automatically switches to **GB** for values ≥ 1 GB
 - Thread count
 - Handle count
 - Process type classification (Application / Background)
 - Global memory usage:
-  - **Used (%)**
-  - **Total memory**
+  - **Used (GB)**
+  - **Total memory (GB)**
 - Independent sorting logic for Memory mode
+
+---
+
+### 🔍 Process Search & Filtering
+- Real-time **process filtering** via search bar
+- Case-insensitive search
+- Filters processes by:
+  - Process name
+- Fully compatible with:
+  - Sorting
+  - Selection
+  - Real-time updates
+- Selected process is preserved whenever possible during list refresh
 
 ---
 
@@ -40,6 +55,7 @@ A **Windows desktop application** inspired by **macOS Activity Monitor** and **W
 - Modern **WinUI 3** desktop UI
 - CPU and Memory modes with dynamic column switching
 - CommunityToolkit **DataGrid**
+- Numeric columns aligned to the **right** (Task Manager–style)
 - Real-time updates **without losing**:
   - Scroll position
   - Selected process
@@ -65,7 +81,7 @@ A **Windows desktop application** inspired by **macOS Activity Monitor** and **W
 
 - **MVVM pattern**
 - Clear separation of concerns:
-  - **Model** → `ProcessInfo`
+  - **Model** → `GroupedProcessInfo`
   - **ViewModel** → `MainViewModel`
   - **View** → XAML (WinUI 3)
 - Service-oriented design:
@@ -85,6 +101,7 @@ A **Windows desktop application** inspired by **macOS Activity Monitor** and **W
 - Real-time refresh using `DispatcherTimer` (1-second interval)
 - Incremental updates (no full collection rebuilds)
 - Collection reconciliation instead of `Clear()` operations
+- Filtering and sorting applied on a derived collection
 - Stable UI even under frequent updates
 - Sorting implemented via collection reordering (`Move`) for minimal UI overhead
 
