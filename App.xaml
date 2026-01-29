@@ -132,6 +132,28 @@
                 <Setter Property="TextAlignment" Value="Right"/>
             </Style>
 
+            <!-- DataGrid Cell Style - Remove focus border completamente -->
+            <Style TargetType="controls:DataGridCell">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="controls:DataGridCell">
+                            <Grid Background="{TemplateBinding Background}"
+                                  BorderBrush="{TemplateBinding BorderBrush}"
+                                  BorderThickness="{TemplateBinding BorderThickness}">
+
+                                <ContentPresenter 
+                                    Content="{TemplateBinding Content}"
+                                    ContentTemplate="{TemplateBinding ContentTemplate}"
+                                    Margin="{TemplateBinding Padding}"
+                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                    VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
             <!-- Selected Row Color -->
             <SolidColorBrush x:Key="DataGridRowSelectedBackground"
                  Color="#0076D7"/>
