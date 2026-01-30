@@ -33,6 +33,14 @@ namespace ActivityMonitor
             {
                 UpdateSortIndicators("Process");
             };
+
+            ViewModel.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(ViewModel.CurrentMode))
+                {
+                    UpdateSortIndicators("Process");
+                }
+            };
         }
 
         private void MainWindow_Activated(object sender, WindowActivatedEventArgs e)

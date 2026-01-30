@@ -68,6 +68,9 @@ namespace ActivityMonitor.ViewModels
 
                 _currentMode = value;
 
+                _sortedColumn = "Process";
+                _sortState = SortState.Ascending;
+
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(IsCpuMode));
                 OnPropertyChanged(nameof(IsMemoryMode));
