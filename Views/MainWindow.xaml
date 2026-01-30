@@ -74,7 +74,8 @@
                            CanUserSortColumns="True"
                            Sorting="ProcessSorting"
                            SelectedItem="{Binding SelectedProcess, Mode=TwoWay}">
-
+            
+            <!-- Process Name Column -->
             <controls:DataGrid.Columns>
                 <controls:DataGridTextColumn
                     x:Name="ProcessColumn"

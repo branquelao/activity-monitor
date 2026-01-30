@@ -29,11 +29,13 @@ namespace ActivityMonitor
             // Set initial and minimum window size
             SetWindowsSize(900, 600, 700, 450);
 
+            // Handle sorting events for the DataGrid
             ProcessGrid.Loaded += (s, e) =>
             {
                 UpdateSortIndicators("Process");
             };
 
+            // Subscribe to sorting event
             ViewModel.PropertyChanged += (s, e) =>
             {
                 if (e.PropertyName == nameof(ViewModel.CurrentMode))
@@ -75,6 +77,7 @@ namespace ActivityMonitor
             }
         }
 
+        // Handle DataGrid column sorting indicators
         private void ProcessSorting(object sender, DataGridColumnEventArgs e)
         {
             string columnName = e.Column.Header?.ToString() ?? "";
@@ -84,6 +87,7 @@ namespace ActivityMonitor
             UpdateSortIndicators(columnName);
         }
 
+        // Update sort indicators on DataGrid columns
         private void UpdateSortIndicators(string sortedColumn)
         {
             if (ProcessGrid.Columns == null || ProcessGrid.Columns.Count == 0)

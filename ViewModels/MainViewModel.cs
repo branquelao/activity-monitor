@@ -68,6 +68,7 @@ namespace ActivityMonitor.ViewModels
 
                 _currentMode = value;
 
+                // Reset sorting on mode change
                 _sortedColumn = "Process";
                 _sortState = SortState.Ascending;
 
@@ -324,6 +325,7 @@ namespace ActivityMonitor.ViewModels
             ApplySorting();
         }
 
+        // Applies filtering and sorting to the process list
         private void ApplyFilterAndSorting()
         {
             IEnumerable<GroupedProcessInfo> query = Processes;
