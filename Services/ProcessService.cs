@@ -29,17 +29,15 @@ namespace ActivityMonitor.Services
                         info = new ProcessInfo
                         {
                             Id = p.Id,
-                            Name = p.ProcessName,
+                            Name = GetFriendlyProcessName(p),
                             PreviousCpuTime = cpuTime
                         };
-
                         ClassifyProcess(info, p);
                         _cache[p.Id] = info;
                     }
 
                     // Calculate CPU delta
                     var deltaCpu = cpuTime - info.PreviousCpuTime;
-
                     info.Cpu = Math.Round(
                         (deltaCpu.TotalMilliseconds /
                         (intervalSeconds * 1000 * _processorCount)) * 100,
@@ -60,6 +58,32 @@ namespace ActivityMonitor.Services
             }
 
             return result;
+        }
+
+        private string GetFriendlyProcessName(Process process)
+        {
+            try
+            {
+                // Tries to get the description of the file (FileDescription)
+                if (!string.IsNullOrEmpty(process.MainModule?.FileName))
+                {
+                    var fileVersionInfo = FileVersionInfo.GetVersionInfo(process.MainModule.FileName);
+
+                    // Use FileDescription if available, else use ProductName
+                    if (!string.IsNullOrEmpty(fileVersionInfo.FileDescription))
+                        return fileVersionInfo.FileDescription;
+
+                    if (!string.IsNullOrEmpty(fileVersionInfo.ProductName))
+                        return fileVersionInfo.ProductName;
+                }
+            }
+            catch
+            {
+                // Access denied or protected process
+            }
+
+            // Fallback: use the name of the process
+            return process.ProcessName;
         }
 
         // Assigns execution type and user
