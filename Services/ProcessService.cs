@@ -6,12 +6,20 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace ActivityMonitor.Services
 {
     // Collects and updates running process information
     public class ProcessService
     {
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern bool QueryFullProcessImageName(
+        IntPtr hProcess,
+        int dwFlags,
+        [Out] System.Text.StringBuilder lpExeName,
+        ref int lpdwSize);
+
         private readonly Dictionary<int, ProcessInfo> _cache = new();
         private readonly int _processorCount = Environment.ProcessorCount;
 
@@ -126,30 +134,54 @@ namespace ActivityMonitor.Services
             info.User = Environment.UserName;
         }
 
+        // Helper Method for Icon Extraction
+        private string? GetProcessFilePath(Process process)
+        {
+            try
+            {
+                // First Attempt: MainModule.FileName
+                if (!string.IsNullOrEmpty(process.MainModule?.FileName))
+                    return process.MainModule.FileName;
+            }
+            catch { }
+
+            try
+            {
+                // Second Attempt: QueryFullProcessImageName
+                var buffer = new System.Text.StringBuilder(1024);
+                int size = buffer.Capacity;
+
+                if (QueryFullProcessImageName(process.Handle, 0, buffer, ref size))
+                {
+                    return buffer.ToString();
+                }
+            }
+            catch { }
+
+            return null;
+        }
+
         // Extracts the icon from the process executable
         private BitmapImage? GetProcessIcon(Process process)
         {
             try
             {
-                if (!string.IsNullOrEmpty(process.MainModule?.FileName))
+                string? filePath = GetProcessFilePath(process);
+
+                if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
                 {
-                    // Extract icon from executable using System.Drawing
-                    using var icon = Icon.ExtractAssociatedIcon(process.MainModule.FileName);
+                    // Extract the icon
+                    using var icon = Icon.ExtractAssociatedIcon(filePath);
 
                     if (icon != null)
                     {
-                        // Convert to bitmap
                         using var bitmap = icon.ToBitmap();
                         using var memory = new MemoryStream();
 
-                        // Save as PNG
                         bitmap.Save(memory, ImageFormat.Png);
                         memory.Position = 0;
 
-                        // Create WinUI3 BitmapImage
                         var bitmapImage = new BitmapImage();
-
-                        // Convert MemoryStream to IRandomAccessStream
                         var raStream = memory.AsRandomAccessStream();
                         bitmapImage.SetSource(raStream);
 
@@ -159,7 +191,7 @@ namespace ActivityMonitor.Services
             }
             catch
             {
-                // Access denied or protected process
+                // Ignore extraction failures
             }
 
             return null;
