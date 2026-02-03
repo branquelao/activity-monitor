@@ -214,6 +214,7 @@ namespace ActivityMonitor.ViewModels
                     CpuTime = TimeSpan.FromTicks(g.Sum(p => p.CpuTime.Ticks)),
                     ThreadCount = g.Sum(p => p.ThreadCount),
                     HandleCount = g.Sum(p => p.HandleCount),
+                    Icon = g.First().Icon,
 
                     ExecutionType = g.Any(p => p.ExecutionType == "Application")
                         ? "Application"

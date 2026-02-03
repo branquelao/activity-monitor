@@ -77,11 +77,26 @@
             
             <!-- Process Name Column -->
             <controls:DataGrid.Columns>
-                <controls:DataGridTextColumn
+                <controls:DataGridTemplateColumn
                     x:Name="ProcessColumn"
                     Header="Process"
-                    Binding="{Binding Name}"
-                    Width="*"/>
+                    Width="*">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="8" Padding="4,0">
+                                <!-- Process Icon  -->
+                                <Image Source="{Binding Icon}"
+                               Width="16"
+                               Height="16"
+                               VerticalAlignment="Center"/>
+
+                                <!-- Process Name -->
+                                <TextBlock Text="{Binding Name}"
+                                  VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                </controls:DataGridTemplateColumn>
 
                 <!-- CPU Mode Columns -->
                 <controls:DataGridTextColumn

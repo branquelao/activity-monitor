@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.UI.Xaml.Media.Imaging;
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -115,6 +116,21 @@ namespace ActivityMonitor.Models
                     _executionType = value;
                     OnPropertyChanged();
                 }
+            }
+        }
+
+        // Process icon
+        private BitmapImage? _icon;
+        public BitmapImage? Icon
+        {
+            get => _icon;
+            set
+            {
+                if (_icon == value)
+                    return;
+
+                _icon = value;
+                OnPropertyChanged();
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.UI.Xaml.Media.Imaging;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
@@ -123,6 +124,21 @@ namespace ActivityMonitor.Models
                     _executionType = value;
                     OnPropertyChanged();
                 }
+            }
+        }
+
+        // Icon representing the grouped process
+        private BitmapImage? _icon;
+        public BitmapImage? Icon
+        {
+            get => _icon;
+            set
+            {
+                if (_icon == value)
+                    return;
+
+                _icon = value;
+                OnPropertyChanged();
             }
         }
 

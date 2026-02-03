@@ -1,7 +1,11 @@
 ﻿using ActivityMonitor.Models;
+using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 
 namespace ActivityMonitor.Services
 {
@@ -30,6 +34,7 @@ namespace ActivityMonitor.Services
                         {
                             Id = p.Id,
                             Name = GetFriendlyProcessName(p),
+                            Icon = GetProcessIcon(p),
                             PreviousCpuTime = cpuTime
                         };
                         ClassifyProcess(info, p);
@@ -60,16 +65,17 @@ namespace ActivityMonitor.Services
             return result;
         }
 
+        // Gets the friendly display name from the executable metadata
         private string GetFriendlyProcessName(Process process)
         {
             try
             {
-                // Tries to get the description of the file (FileDescription)
+                // Try to get the file description
                 if (!string.IsNullOrEmpty(process.MainModule?.FileName))
                 {
                     var fileVersionInfo = FileVersionInfo.GetVersionInfo(process.MainModule.FileName);
 
-                    // Use FileDescription if available, else use ProductName
+                    // Use FileDescription if available, otherwise use ProductName
                     if (!string.IsNullOrEmpty(fileVersionInfo.FileDescription))
                         return fileVersionInfo.FileDescription;
 
@@ -82,7 +88,7 @@ namespace ActivityMonitor.Services
                 // Access denied or protected process
             }
 
-            // Fallback: use the name of the process
+            // Fallback: use the process name
             return process.ProcessName;
         }
 
@@ -118,6 +124,45 @@ namespace ActivityMonitor.Services
             // Default fallback
             info.ExecutionType = "Background";
             info.User = Environment.UserName;
+        }
+
+        // Extracts the icon from the process executable
+        private BitmapImage? GetProcessIcon(Process process)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(process.MainModule?.FileName))
+                {
+                    // Extract icon from executable using System.Drawing
+                    using var icon = Icon.ExtractAssociatedIcon(process.MainModule.FileName);
+
+                    if (icon != null)
+                    {
+                        // Convert to bitmap
+                        using var bitmap = icon.ToBitmap();
+                        using var memory = new MemoryStream();
+
+                        // Save as PNG
+                        bitmap.Save(memory, ImageFormat.Png);
+                        memory.Position = 0;
+
+                        // Create WinUI3 BitmapImage
+                        var bitmapImage = new BitmapImage();
+
+                        // Convert MemoryStream to IRandomAccessStream
+                        var raStream = memory.AsRandomAccessStream();
+                        bitmapImage.SetSource(raStream);
+
+                        return bitmapImage;
+                    }
+                }
+            }
+            catch
+            {
+                // Access denied or protected process
+            }
+
+            return null;
         }
     }
 }
