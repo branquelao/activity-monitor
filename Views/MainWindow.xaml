@@ -84,15 +84,23 @@
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal" Spacing="8" Padding="4,0">
-                                <!-- Process Icon  -->
-                                <Image Source="{Binding Icon}"
-                               Width="16"
-                               Height="16"
-                               VerticalAlignment="Center"/>
+                                <!-- Process Icon or Standard Icon -->
+                                <Grid Width="16" Height="16" VerticalAlignment="Center">
+                                    <!-- Real Process Icon (If Available) -->
+                                    <Image Source="{Binding Icon}"
+                                           Width="16"
+                                           Height="16"
+                                           Visibility="{Binding Icon, Converter={StaticResource NullToVisibilityConverter}}"/>
+
+                                    <!-- Standard Icon (If Icon is Null) -->
+                                    <FontIcon Glyph="&#xE756;"
+                                              FontSize="14"
+                                              Visibility="{Binding Icon, Converter={StaticResource InverseNullToVisibilityConverter}}"/>
+                                </Grid>
 
                                 <!-- Process Name -->
                                 <TextBlock Text="{Binding Name}"
-                                  VerticalAlignment="Center"/>
+                                            VerticalAlignment="Center"/>
                             </StackPanel>
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellTemplate>
