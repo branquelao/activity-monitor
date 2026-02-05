@@ -355,9 +355,36 @@ namespace ActivityMonitor.ViewModels
 
             var list = query.ToList();
 
-            FilteredProcesses.Clear();
-            foreach (var item in list)
-                FilteredProcesses.Add(item);
+            // Remove items that are no longer in the filtered list
+            for (int i = FilteredProcesses.Count - 1; i >= 0; i--)
+            {
+                if (!list.Contains(FilteredProcesses[i]))
+                    FilteredProcesses.RemoveAt(i);
+            }
+
+            // Add or reorder items
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (i >= FilteredProcesses.Count)
+                {
+                    // Add new item at the end
+                    FilteredProcesses.Add(list[i]);
+                }
+                else if (FilteredProcesses[i] != list[i])
+                {
+                    // Find the item in the wrong position and move it to the correct position
+                    int oldIndex = FilteredProcesses.IndexOf(list[i]);
+
+                    if (oldIndex >= 0)
+                    {
+                        FilteredProcesses.Move(oldIndex, i);
+                    }
+                    else
+                    {
+                        FilteredProcesses.Insert(i, list[i]);
+                    }
+                }
+            }
         }
 
         // Applies sorting to the process list
