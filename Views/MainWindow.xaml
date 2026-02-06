@@ -192,9 +192,9 @@
                 <!-- Disk Mode Columns -->
                 <controls:DataGridTextColumn
                     x:Name="DiskColumn"
-                    Header="Disk Read"
+                    Header="Read (MB/s)"
                     Binding="{Binding DiskReadDisplay}"
-                    Width="100"
+                    Width="125"
                     Visibility="{x:Bind ViewModel.IsDiskMode, Mode=OneWay}">
                     <controls:DataGridTextColumn.ElementStyle>
                         <StaticResource ResourceKey="RightAlignedCell"/>
@@ -202,9 +202,9 @@
                 </controls:DataGridTextColumn>
 
                 <controls:DataGridTextColumn
-                    Header="Disk Write"
+                    Header="Write (MB/s)"
                     Binding="{Binding DiskWriteDisplay}"
-                    Width="100"
+                    Width="125"
                     Visibility="{x:Bind ViewModel.IsDiskMode, Mode=OneWay}">
                     <controls:DataGridTextColumn.ElementStyle>
                         <StaticResource ResourceKey="RightAlignedCell"/>
@@ -212,9 +212,9 @@
                 </controls:DataGridTextColumn>
 
                 <controls:DataGridTextColumn
-                    Header="Total Disk"
+                    Header="Total I/O"
                     Binding="{Binding TotalDiskIODisplay}"
-                    Width="100"
+                    Width="125"
                     Visibility="{x:Bind ViewModel.IsDiskMode, Mode=OneWay}">
                     <controls:DataGridTextColumn.ElementStyle>
                         <StaticResource ResourceKey="RightAlignedCell"/>
