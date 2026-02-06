@@ -459,6 +459,9 @@ namespace ActivityMonitor.ViewModels
                 "Threads" => p => p.ThreadCount,
                 "Memory (MB)" => p => p.Memory,
                 "Handles" => p => p.HandleCount,
+                "Disk Read" => p => p.DiskReadRate,     
+                "Disk Write" => p => p.DiskWriteRate,   
+                "Total Disk" => p => p.TotalDiskIO,    
                 "Type" => p => p.ExecutionType,
                 _ => p => p.Name
             };
