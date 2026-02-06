@@ -112,6 +112,46 @@ namespace ActivityMonitor.Models
             }
         }
 
+        // Disk read rate in MB/s (summed across all instances)
+        private double _diskReadRate;
+        public double DiskReadRate
+        {
+            get => _diskReadRate;
+            set
+            {
+                if (Math.Abs(_diskReadRate - value) > 0.01)
+                {
+                    _diskReadRate = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(DiskReadDisplay));
+                }
+            }
+        }
+
+        // Disk write rate in MB/s (summed across all instances)
+        private double _diskWriteRate;
+        public double DiskWriteRate
+        {
+            get => _diskWriteRate;
+            set
+            {
+                if (Math.Abs(_diskWriteRate - value) > 0.01)
+                {
+                    _diskWriteRate = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(DiskWriteDisplay));
+                }
+            }
+        }
+
+        // Total disk I/O
+        public double TotalDiskIO => DiskReadRate + DiskWriteRate;
+
+        // Display formatted values
+        public string DiskReadDisplay => $"{DiskReadRate.ToString("F2", CultureInfo.InvariantCulture)}";
+        public string DiskWriteDisplay => $"{DiskWriteRate.ToString("F2", CultureInfo.InvariantCulture)}";
+        public string TotalDiskIODisplay => $"{TotalDiskIO.ToString("F2", CultureInfo.InvariantCulture)}";
+
         // Indicates whether the grouped process is application or background
         private string _executionType = "Background";
         public string ExecutionType

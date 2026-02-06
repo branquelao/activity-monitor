@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
+using Windows.Storage.Streams;
 
 namespace ActivityMonitor.Services
 {
@@ -15,10 +16,27 @@ namespace ActivityMonitor.Services
     {
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern bool QueryFullProcessImageName(
-        IntPtr hProcess,
-        int dwFlags,
-        [Out] System.Text.StringBuilder lpExeName,
-        ref int lpdwSize);
+            IntPtr hProcess,
+            int dwFlags,
+            [Out] System.Text.StringBuilder lpExeName,
+            ref int lpdwSize);
+
+        // ADD THIS: Win32 API for I/O counters
+        [StructLayout(LayoutKind.Sequential)]
+        private struct IO_COUNTERS
+        {
+            public ulong ReadOperationCount;
+            public ulong WriteOperationCount;
+            public ulong OtherOperationCount;
+            public long ReadTransferCount;
+            public long WriteTransferCount;
+            public ulong OtherTransferCount;
+        }
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern bool GetProcessIoCounters(
+            IntPtr processHandle,
+            out IO_COUNTERS ioCounters);
 
         private readonly Dictionary<int, ProcessInfo> _cache = new();
         private readonly int _processorCount = Environment.ProcessorCount;
@@ -35,6 +53,23 @@ namespace ActivityMonitor.Services
                     var cpuTime = p.TotalProcessorTime;
                     var memory = Math.Round(p.WorkingSet64 / 1024.0 / 1024.0, 2);
 
+                    // Get disk I/O counters
+                    long diskReadBytes = 0;
+                    long diskWriteBytes = 0;
+
+                    try
+                    {
+                        if (GetProcessIoCounters(p.Handle, out IO_COUNTERS counters))
+                        {
+                            diskReadBytes = counters.ReadTransferCount;
+                            diskWriteBytes = counters.WriteTransferCount;
+                        }
+                    }
+                    catch
+                    {
+                        // Access denied or not available
+                    }
+
                     // Create cache entry if missing
                     if (!_cache.TryGetValue(p.Id, out var info))
                     {
@@ -43,7 +78,9 @@ namespace ActivityMonitor.Services
                             Id = p.Id,
                             Name = GetFriendlyProcessName(p),
                             Icon = GetProcessIcon(p),
-                            PreviousCpuTime = cpuTime
+                            PreviousCpuTime = cpuTime,
+                            PreviousDiskReadBytes = diskReadBytes,   
+                            PreviousDiskWriteBytes = diskWriteBytes  
                         };
                         ClassifyProcess(info, p);
                         _cache[p.Id] = info;
@@ -56,11 +93,25 @@ namespace ActivityMonitor.Services
                         (intervalSeconds * 1000 * _processorCount)) * 100,
                         2);
 
+                    // Calculate Disk I/O rate (bytes per second -> MB/s)
+                    var deltaRead = diskReadBytes - info.PreviousDiskReadBytes;
+                    var deltaWrite = diskWriteBytes - info.PreviousDiskWriteBytes;
+
+                    info.DiskReadRate = Math.Round((deltaRead / intervalSeconds) / (1024.0 * 1024.0), 2);
+                    info.DiskWriteRate = Math.Round((deltaWrite / intervalSeconds) / (1024.0 * 1024.0), 2);
+
                     info.Memory = memory;
                     info.CpuTime = cpuTime;
                     info.ThreadCount = p.Threads.Count;
                     info.HandleCount = p.HandleCount;
+
+                    // Update disk bytes
+                    info.DiskReadBytes = diskReadBytes;
+                    info.DiskWriteBytes = diskWriteBytes;
+
                     info.PreviousCpuTime = cpuTime;
+                    info.PreviousDiskReadBytes = diskReadBytes;   
+                    info.PreviousDiskWriteBytes = diskWriteBytes;
 
                     result.Add(info);
                 }

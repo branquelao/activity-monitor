@@ -13,7 +13,8 @@ namespace ActivityMonitor.ViewModels
     public enum Viewmode
     {
         Cpu,
-        Memory
+        Memory,
+        Disk
     }
 
     // Represents the current sorting state
@@ -52,6 +53,7 @@ namespace ActivityMonitor.ViewModels
         // Mode helpers for XAML bindings
         public bool IsCpuMode => CurrentMode == Viewmode.Cpu;
         public bool IsMemoryMode => CurrentMode == Viewmode.Memory;
+        public bool IsDiskMode => CurrentMode == Viewmode.Disk;
 
         // Process list shown in the grid
         public ObservableCollection<GroupedProcessInfo> Processes { get; } = new();
@@ -75,6 +77,7 @@ namespace ActivityMonitor.ViewModels
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(IsCpuMode));
                 OnPropertyChanged(nameof(IsMemoryMode));
+                OnPropertyChanged(nameof(IsDiskMode));
 
                 UpdateProcesses();
                 ApplySorting();
@@ -85,6 +88,7 @@ namespace ActivityMonitor.ViewModels
         public ICommand CpuCommand { get; }
         public ICommand MemoryCommand { get; }
         public ICommand EndTaskCommand { get; }
+        public ICommand DiskCommand { get; }
 
         // CPU usage state
         private double _cpuUsed;
@@ -143,6 +147,41 @@ namespace ActivityMonitor.ViewModels
         public string MemoryUsedText => $"{MemoryUsedGB:F1} GB";
         public string MemoryTotalText => $"{MemoryTotalGB:F1} GB";
 
+        // Disk usage state
+        private double _diskReadTotal;
+        private double _diskWriteTotal;
+
+        public double DiskReadTotal
+        {
+            get => _diskReadTotal;
+            set
+            {
+                if (Math.Abs(_diskReadTotal - value) < 0.01)
+                    return;
+
+                _diskReadTotal = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(DiskReadTotalText));
+            }
+        }
+
+        public double DiskWriteTotal
+        {
+            get => _diskWriteTotal;
+            set
+            {
+                if (Math.Abs(_diskWriteTotal - value) < 0.01)
+                    return;
+
+                _diskWriteTotal = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(DiskWriteTotalText));
+            }
+        }
+
+        public string DiskReadTotalText => $"{DiskReadTotal:F2} MB/s";
+        public string DiskWriteTotalText => $"{DiskWriteTotal:F2} MB/s";
+
         // Sorting state
         private string? _sortedColumn = "Process";
         private SortState _sortState = SortState.Ascending;
@@ -160,6 +199,7 @@ namespace ActivityMonitor.ViewModels
         // Rolling history for graphs
         public ObservableCollection<double> CpuHistory { get; } = new();
         public ObservableCollection<double> MemoryHistory { get; } = new();
+        public ObservableCollection<double> DiskHistory { get; } = new();
 
         private const int MaxHistoryPoints = 60;
 
@@ -185,6 +225,7 @@ namespace ActivityMonitor.ViewModels
             EndTaskCommand = new RelayCommand(EndTask);
             CpuCommand = new RelayCommand(() => CurrentMode = Viewmode.Cpu);
             MemoryCommand = new RelayCommand(() => CurrentMode = Viewmode.Memory);
+            DiskCommand = new RelayCommand(() => CurrentMode = Viewmode.Disk);
 
             // Updates data every second
             _timer = new DispatcherTimer
@@ -214,6 +255,8 @@ namespace ActivityMonitor.ViewModels
                     CpuTime = TimeSpan.FromTicks(g.Sum(p => p.CpuTime.Ticks)),
                     ThreadCount = g.Sum(p => p.ThreadCount),
                     HandleCount = g.Sum(p => p.HandleCount),
+                    DiskReadRate = g.Sum(p => p.DiskReadRate),
+                    DiskWriteRate = g.Sum(p => p.DiskWriteRate),
                     Icon = g.First().Icon,
 
                     ExecutionType = g.Any(p => p.ExecutionType == "Application")
@@ -245,6 +288,8 @@ namespace ActivityMonitor.ViewModels
                     existing.CpuTime = p.CpuTime;
                     existing.ThreadCount = p.ThreadCount;
                     existing.HandleCount = p.HandleCount;
+                    existing.DiskReadRate = p.DiskReadRate;
+                    existing.DiskWriteRate = p.DiskWriteRate;
                     existing.Pids = p.Pids;
                 }
             }
@@ -266,7 +311,18 @@ namespace ActivityMonitor.ViewModels
 
                 AddPoint(MemoryHistory, (MemoryUsedGB / MemoryTotalGB) * 100);
             }
-            
+
+            // Disk mode update
+            if (IsDiskMode)
+            {
+                // Calculate total disk I/O across all processes
+                DiskReadTotal = grouped.Sum(p => p.DiskReadRate);
+                DiskWriteTotal = grouped.Sum(p => p.DiskWriteRate);
+
+                // Add total I/O to history (for graph)
+                AddPoint(DiskHistory, DiskReadTotal + DiskWriteTotal);
+            }
+
             ApplyFilterAndSorting();
 
             if (selectedProcessName != null)
@@ -346,6 +402,9 @@ namespace ActivityMonitor.ViewModels
                 "Memory (MB)" => p => p.Memory,
                 "Handles" => p => p.HandleCount,
                 "Type" => p => p.ExecutionType,
+                "Read (MB/s)" => p => p.DiskReadRate,   
+                "Write (MB/s)" => p => p.DiskWriteRate, 
+                "Total I/O" => p => p.TotalDiskIO,      
                 _ => p => p.Name
             };
 

@@ -52,6 +52,11 @@
                         Style="{Binding IsMemoryMode, Converter={StaticResource HeaderButtonStyleConverter}}"
                         Content="Memory"
                         Command="{Binding MemoryCommand}"/>
+                
+                <Button x:Name="DiskButton"
+                        Style="{Binding IsDiskMode, Converter={StaticResource HeaderButtonStyleConverter}}"
+                        Content="Disk"
+                        Command="{Binding DiskCommand}"/>
             </StackPanel>
 
             <!-- Search bar -->
@@ -150,7 +155,7 @@
                     x:Name="MemoryColumn"
                     Header="Memory (MB)"
                     Binding="{Binding MemoryDisplay}"
-                    Width="140"
+                    Width="130"
                     Visibility="{x:Bind ViewModel.IsMemoryMode, Mode=OneWay}">
                     <controls:DataGridTextColumn.ElementStyle>
                         <StaticResource ResourceKey="RightAlignedCell"/>
@@ -182,6 +187,45 @@
                     Binding="{Binding ExecutionType}"
                     Width="140"
                     Visibility="{x:Bind ViewModel.IsMemoryMode, Mode=OneWay}">
+                </controls:DataGridTextColumn>
+
+                <!-- Disk Mode Columns -->
+                <controls:DataGridTextColumn
+                    x:Name="DiskColumn"
+                    Header="Disk Read"
+                    Binding="{Binding DiskReadDisplay}"
+                    Width="100"
+                    Visibility="{x:Bind ViewModel.IsDiskMode, Mode=OneWay}">
+                    <controls:DataGridTextColumn.ElementStyle>
+                        <StaticResource ResourceKey="RightAlignedCell"/>
+                    </controls:DataGridTextColumn.ElementStyle>
+                </controls:DataGridTextColumn>
+
+                <controls:DataGridTextColumn
+                    Header="Disk Write"
+                    Binding="{Binding DiskWriteDisplay}"
+                    Width="100"
+                    Visibility="{x:Bind ViewModel.IsDiskMode, Mode=OneWay}">
+                    <controls:DataGridTextColumn.ElementStyle>
+                        <StaticResource ResourceKey="RightAlignedCell"/>
+                    </controls:DataGridTextColumn.ElementStyle>
+                </controls:DataGridTextColumn>
+
+                <controls:DataGridTextColumn
+                    Header="Total Disk"
+                    Binding="{Binding TotalDiskIODisplay}"
+                    Width="100"
+                    Visibility="{x:Bind ViewModel.IsDiskMode, Mode=OneWay}">
+                    <controls:DataGridTextColumn.ElementStyle>
+                        <StaticResource ResourceKey="RightAlignedCell"/>
+                    </controls:DataGridTextColumn.ElementStyle>
+                </controls:DataGridTextColumn>
+
+                <controls:DataGridTextColumn
+                    Header="Type"
+                    Binding="{Binding ExecutionType}"
+                    Width="140"
+                    Visibility="{x:Bind ViewModel.IsDiskMode, Mode=OneWay}">
                 </controls:DataGridTextColumn>
             </controls:DataGrid.Columns>
         </controls:DataGrid>
@@ -255,6 +299,42 @@
                 Width="450"
                 Margin="0,6,0,0"
                 Values="{Binding MemoryHistory}"
+                MaxValue="100"/>
+        </StackPanel>
+
+        <!-- Disk summary and graph -->
+        <StackPanel Grid.Row="2"
+                    Orientation="Vertical"
+                    HorizontalAlignment="Center"
+                    Spacing="8"
+                    Margin="0,8,0,12"
+                    Visibility="{x:Bind ViewModel.IsDiskMode, Mode=OneWay}">
+
+            <StackPanel Orientation="Horizontal"
+                        Spacing="24"
+                        HorizontalAlignment="Center">
+
+                <TextBlock FontSize="14">
+                        <Run Text="Disk Read: "/>
+                        <Run Text="{x:Bind ViewModel.DiskReadTotalText, Mode=OneWay}"
+                             Foreground="{ThemeResource UsedBrush}"
+                             FontWeight="SemiBold"/>
+                </TextBlock>
+
+                <TextBlock FontSize="14">
+                        <Run Text="Disk Write: "/>
+                        <Run Text="{x:Bind ViewModel.DiskWriteTotalText, Mode=OneWay}"
+                             Foreground="{ThemeResource FreeBrush}"
+                             FontWeight="SemiBold"/>
+                </TextBlock>
+
+            </StackPanel>
+
+            <localControls:PerformanceGraph
+                Height="120"
+                Width="450"
+                Margin="0,6,0,0"
+                Values="{Binding DiskHistory}"
                 MaxValue="100"/>
         </StackPanel>
 

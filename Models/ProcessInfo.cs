@@ -89,6 +89,70 @@ namespace ActivityMonitor.Models
             }
         }
 
+        // Disk I/O rates in MB/s
+        private long _diskReadBytes;
+        public long DiskReadBytes
+        {
+            get => _diskReadBytes;
+            set
+            {
+                if (_diskReadBytes != value)
+                {
+                    _diskReadBytes = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private long _diskWriteBytes;
+        public long DiskWriteBytes
+        {
+            get => _diskWriteBytes;
+            set
+            {
+                if (_diskWriteBytes != value)
+                {
+                    _diskWriteBytes = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        // For calculating rate (delta)
+        public long PreviousDiskReadBytes { get; set; }
+        public long PreviousDiskWriteBytes { get; set; }
+
+        // Rate in MB/s
+        private double _diskReadRate;
+        public double DiskReadRate
+        {
+            get => _diskReadRate;
+            set
+            {
+                if (Math.Abs(_diskReadRate - value) > 0.01)
+                {
+                    _diskReadRate = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private double _diskWriteRate;
+        public double DiskWriteRate
+        {
+            get => _diskWriteRate;
+            set
+            {
+                if (Math.Abs(_diskWriteRate - value) > 0.01)
+                {
+                    _diskWriteRate = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public double TotalDiskIO => DiskReadRate + DiskWriteRate;
+
         // Indicates whether the process runs in foreground or background
         private string _executionType = "Background";
         public string ExecutionType
