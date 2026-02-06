@@ -89,21 +89,6 @@ namespace ActivityMonitor.Models
             }
         }
 
-        // User running the process
-        private string _user = "-";
-        public string User
-        {
-            get => _user;
-            set
-            {
-                if (_user != value)
-                {
-                    _user = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
         // Indicates whether the process runs in foreground or background
         private string _executionType = "Background";
         public string ExecutionType

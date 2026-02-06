@@ -100,14 +100,13 @@ namespace ActivityMonitor.Services
             return process.ProcessName;
         }
 
-        // Assigns execution type and user
+        // Assigns execution type
         private static void ClassifyProcess(ProcessInfo info, Process process)
         {
             // Kernel process
             if (process.Id == 4)
             {
                 info.ExecutionType = "Background";
-                info.User = "SYSTEM";
                 return;
             }
 
@@ -117,7 +116,6 @@ namespace ActivityMonitor.Services
                 process.ProcessName.Equals("lsass", StringComparison.OrdinalIgnoreCase))
             {
                 info.ExecutionType = "Background";
-                info.User = "SYSTEM";
                 return;
             }
 
@@ -125,13 +123,11 @@ namespace ActivityMonitor.Services
             if (process.MainWindowHandle != IntPtr.Zero)
             {
                 info.ExecutionType = "Application";
-                info.User = Environment.UserName;
                 return;
             }
 
             // Default fallback
             info.ExecutionType = "Background";
-            info.User = Environment.UserName;
         }
 
         // Helper Method for Icon Extraction
