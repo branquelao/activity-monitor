@@ -62,7 +62,7 @@
             <!-- Search bar -->
             <AutoSuggestBox
                 Grid.Column="2"
-                Width="220"
+                Width="165"
                 PlaceholderText="Search process..."
                 Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 HorizontalAlignment="Right"/>
