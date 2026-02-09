@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="ActivityMonitor.Views.ProcessDetailsWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Process Details">
+
+    <Grid Background="{ThemeResource AppBackgroundBrush}"
+          Padding="20"
+          Width="600"
+          Height="700">
+
+        <ScrollViewer>
+            <StackPanel Spacing="16">
+
+                <!-- Process Name -->
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Process Name"
+                             FontWeight="SemiBold"
+                             Foreground="{ThemeResource AppForegroundBrush}"/>
+                    <TextBlock x:Name="ProcessNameText"
+                             FontSize="20"
+                             FontWeight="Bold"/>
+                </StackPanel>
+
+                <!-- Process ID -->
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Process ID (PID)"
+                             FontWeight="SemiBold"
+                             Foreground="{ThemeResource AppForegroundBrush}"/>
+                    <TextBlock x:Name="ProcessIdText"
+                             FontSize="16"/>
+                </StackPanel>
+
+                <!-- Executable Path -->
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Executable Path"
+                             FontWeight="SemiBold"
+                             Foreground="{ThemeResource AppForegroundBrush}"/>
+                    <TextBlock x:Name="ExecutablePathText"
+                             TextWrapping="Wrap"
+                             FontSize="14"
+                             IsTextSelectionEnabled="True"/>
+                </StackPanel>
+
+                <!-- Command Line -->
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Command Line"
+                             FontWeight="SemiBold"
+                             Foreground="{ThemeResource AppForegroundBrush}"/>
+                    <TextBlock x:Name="CommandLineText"
+                             TextWrapping="Wrap"
+                             FontSize="14"
+                             IsTextSelectionEnabled="True"/>
+                </StackPanel>
+
+                <!-- Working Directory -->
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Working Directory"
+                             FontWeight="SemiBold"
+                             Foreground="{ThemeResource AppForegroundBrush}"/>
+                    <TextBlock x:Name="WorkingDirectoryText"
+                             TextWrapping="Wrap"
+                             FontSize="14"
+                             IsTextSelectionEnabled="True"/>
+                </StackPanel>
+
+                <!-- User -->
+                <StackPanel Spacing="4">
+                    <TextBlock Text="User"
+                             FontWeight="SemiBold"
+                             Foreground="{ThemeResource AppForegroundBrush}"/>
+                    <TextBlock x:Name="UserNameText"
+                             FontSize="14"/>
+                </StackPanel>
+
+                <!-- Start Time -->
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Start Time"
+                             FontWeight="SemiBold"
+                             Foreground="{ThemeResource AppForegroundBrush}"/>
+                    <TextBlock x:Name="StartTimeText"
+                             FontSize="14"/>
+                </StackPanel>
+
+                <Border Height="1" 
+                        Background="{ThemeResource HeaderButtonBorder}"
+                        Margin="0,8"/>
+
+                <!-- File Information -->
+                <TextBlock Text="File Information"
+                         FontSize="18"
+                         FontWeight="Bold"
+                         Margin="0,8,0,0"/>
+
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Product Name"
+                             FontWeight="SemiBold"
+                             Foreground="{ThemeResource AppForegroundBrush}"/>
+                    <TextBlock x:Name="ProductNameText"
+                             FontSize="14"/>
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Company"
+                             FontWeight="SemiBold"
+                             Foreground="{ThemeResource AppForegroundBrush}"/>
+                    <TextBlock x:Name="CompanyText"
+                             FontSize="14"/>
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Description"
+                             FontWeight="SemiBold"
+                             Foreground="{ThemeResource AppForegroundBrush}"/>
+                    <TextBlock x:Name="DescriptionText"
+                             TextWrapping="Wrap"
+                             FontSize="14"/>
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                    <TextBlock Text="File Version"
+                             FontWeight="SemiBold"
+                             Foreground="{ThemeResource AppForegroundBrush}"/>
+                    <TextBlock x:Name="FileVersionText"
+                             FontSize="14"/>
+                </StackPanel>
+
+                <Border Height="1" 
+                        Background="{ThemeResource HeaderButtonBorder}"
+                        Margin="0,8"/>
+
+                <!-- Resource Usage -->
+                <TextBlock Text="Resource Usage"
+                         FontSize="18"
+                         FontWeight="Bold"
+                         Margin="0,8,0,0"/>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Spacing="4">
+                        <TextBlock Text="CPU Usage"
+                                 FontWeight="SemiBold"
+                                 Foreground="{ThemeResource AppForegroundBrush}"/>
+                        <TextBlock x:Name="CpuUsageText"
+                                 FontSize="16"
+                                 FontWeight="Bold"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Spacing="4">
+                        <TextBlock Text="Memory"
+                                 FontWeight="SemiBold"
+                                 Foreground="{ThemeResource AppForegroundBrush}"/>
+                        <TextBlock x:Name="MemoryText"
+                                 FontSize="16"
+                                 FontWeight="Bold"/>
+                    </StackPanel>
+                </Grid>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Spacing="4">
+                        <TextBlock Text="Threads"
+                                 FontWeight="SemiBold"
+                                 Foreground="{ThemeResource AppForegroundBrush}"/>
+                        <TextBlock x:Name="ThreadsText"
+                                 FontSize="14"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Spacing="4">
+                        <TextBlock Text="Handles"
+                                 FontWeight="SemiBold"
+                                 Foreground="{ThemeResource AppForegroundBrush}"/>
+                        <TextBlock x:Name="HandlesText"
+                                 FontSize="14"/>
+                    </StackPanel>
+                </Grid>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Window>

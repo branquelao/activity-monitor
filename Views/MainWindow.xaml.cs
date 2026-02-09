@@ -111,5 +111,15 @@ namespace ActivityMonitor
                 }
             }
         }
+
+        private void ProcessGrid_DoubleTapped(object sender, Microsoft.UI.Xaml.Input.DoubleTappedRoutedEventArgs e)
+        {
+            if (ViewModel.SelectedProcess != null)
+            {
+                // Open details window
+                var detailsWindow = new Views.ProcessDetailsWindow(ViewModel.SelectedProcess);
+                detailsWindow.Activate();
+            }
+        }
     }
 }

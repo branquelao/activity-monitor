@@ -17,6 +17,7 @@
   <ItemGroup>
     <None Remove="Controls\PerformanceGraph.xaml" />
     <None Remove="Themes\Colors.xaml" />
+    <None Remove="Views\ProcessDetailsWindow.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -49,7 +50,9 @@
     <PackageReference Include="System.Management" Version="10.0.2" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Views\" />
+    <Page Update="Views\ProcessDetailsWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Controls\PerformanceGraph.xaml">

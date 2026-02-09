@@ -78,7 +78,8 @@
                            SelectionMode="Single"
                            CanUserSortColumns="True"
                            Sorting="ProcessSorting"
-                           SelectedItem="{Binding SelectedProcess, Mode=TwoWay}">
+                           SelectedItem="{Binding SelectedProcess, Mode=TwoWay}"
+                           DoubleTapped="ProcessGrid_DoubleTapped">
             
             <!-- Process Name Column -->
             <controls:DataGrid.Columns>

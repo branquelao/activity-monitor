@@ -243,5 +243,119 @@ namespace ActivityMonitor.Services
 
             return null;
         }
+
+        // Gets detailed information about a specific process
+        public ProcessDetails? GetProcessDetails(int processId)
+        {
+            try
+            {
+                var process = System.Diagnostics.Process.GetProcessById(processId);
+
+                var details = new ProcessDetails
+                {
+                    Name = GetFriendlyProcessName(process),
+                    ProcessId = processId,
+                    StartTime = process.StartTime,
+                    ThreadCount = process.Threads.Count,
+                    HandleCount = process.HandleCount,
+                    CpuUsage = 0, // Will be updated from cache if available
+                    MemoryMB = Math.Round(process.WorkingSet64 / 1024.0 / 1024.0, 2)
+                };
+
+                // Try to get executable path and related info
+                try
+                {
+                    string? filePath = GetProcessFilePath(process);
+
+                    if (!string.IsNullOrEmpty(filePath))
+                    {
+                        details.ExecutablePath = filePath;
+                        details.WorkingDirectory = System.IO.Path.GetDirectoryName(filePath) ?? "";
+
+                        // Get file version info
+                        var versionInfo = System.Diagnostics.FileVersionInfo.GetVersionInfo(filePath);
+                        details.FileVersion = versionInfo.FileVersion ?? "";
+                        details.ProductName = versionInfo.ProductName ?? "";
+                        details.Company = versionInfo.CompanyName ?? "";
+                        details.Description = versionInfo.FileDescription ?? "";
+                    }
+                }
+                catch
+                {
+                    // Access denied or unavailable
+                    details.ExecutablePath = "Access Denied";
+                }
+
+                // Try to get command line
+                try
+                {
+                    details.CommandLine = GetProcessCommandLine(processId);
+                }
+                catch
+                {
+                    details.CommandLine = "Access Denied";
+                }
+
+                // Try to get username
+                try
+                {
+                    details.UserName = GetProcessOwner(process);
+                }
+                catch
+                {
+                    details.UserName = "Unknown";
+                }
+
+                // Get CPU from cache if available
+                if (_cache.TryGetValue(processId, out var cachedInfo))
+                {
+                    details.CpuUsage = cachedInfo.Cpu;
+                }
+
+                return details;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        // Helper: Get command line arguments
+        private string GetProcessCommandLine(int processId)
+        {
+            try
+            {
+                using var searcher = new System.Management.ManagementObjectSearcher(
+                    $"SELECT CommandLine FROM Win32_Process WHERE ProcessId = {processId}");
+
+                foreach (System.Management.ManagementObject obj in searcher.Get())
+                {
+                    return obj["CommandLine"]?.ToString() ?? "";
+                }
+            }
+            catch { }
+
+            return "";
+        }
+
+        // Helper: Get process owner
+        private string GetProcessOwner(System.Diagnostics.Process process)
+        {
+            try
+            {
+                using var searcher = new System.Management.ManagementObjectSearcher(
+                    $"SELECT * FROM Win32_Process WHERE ProcessId = {process.Id}");
+
+                foreach (System.Management.ManagementObject obj in searcher.Get())
+                {
+                    string[] owner = new string[2];
+                    obj.InvokeMethod("GetOwner", owner);
+                    return $"{owner[1]}\\{owner[0]}"; // Domain\Username
+                }
+            }
+            catch { }
+
+            return Environment.UserName;
+        }
     }
 }
