@@ -21,6 +21,9 @@ namespace ActivityMonitor.Views
             // Set window size and bring to front
             SetWindowSizeAndBringToFront(600, 800);
 
+            // Set window icon
+            SetWindowIcon();
+
             LoadProcessDetails(processInfo);
         }
 
@@ -100,6 +103,16 @@ namespace ActivityMonitor.Views
             MemoryText.Text = $"{details.MemoryMB:F2} MB";
             ThreadsText.Text = details.ThreadCount.ToString();
             HandlesText.Text = details.HandleCount.ToString();
+        }
+
+        private void SetWindowIcon()
+        {
+            IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+            var windowId = Microsoft.UI.Win32Interop.GetWindowIdFromWindow(hWnd);
+            var appWindow = AppWindow.GetFromWindowId(windowId);
+
+            // Set the same icon as the main window
+            appWindow.SetIcon("Assets/AppIcon_Logo.ico");
         }
     }
 }
