@@ -8,7 +8,7 @@
     <Grid Background="{ThemeResource AppBackgroundBrush}"
           Padding="20"
           Width="600"
-          Height="700">
+          Height="750">
 
         <ScrollViewer>
             <StackPanel Spacing="16">
