@@ -1,33 +1,54 @@
 using ActivityMonitor.Models;
 using ActivityMonitor.Services;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Windowing;
 using System;
 using System.Globalization;
+using System.Runtime.InteropServices;
 
 namespace ActivityMonitor.Views
 {
     public sealed partial class ProcessDetailsWindow : Window
     {
+        // Win32 API to bring window to front
+        [DllImport("user32.dll")]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+
         public ProcessDetailsWindow(GroupedProcessInfo processInfo)
         {
             this.InitializeComponent();
 
-            // Set window size
-            SetWindowSize(600, 800);
-
-            // Bring Window to front
-            BringToFront();
+            // Set window size and bring to front
+            SetWindowSizeAndBringToFront(600, 800);
 
             LoadProcessDetails(processInfo);
         }
 
-        private void SetWindowSize(int width, int height)
+        private void SetWindowSizeAndBringToFront(int width, int height)
         {
             IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
             var windowId = Microsoft.UI.Win32Interop.GetWindowIdFromWindow(hWnd);
-            var appWindow = Microsoft.UI.Windowing.AppWindow.GetFromWindowId(windowId);
+            var appWindow = AppWindow.GetFromWindowId(windowId);
 
+            // Resize
             appWindow.Resize(new Windows.Graphics.SizeInt32(width, height));
+
+            // Make sure it's on top
+            if (appWindow.Presenter is OverlappedPresenter presenter)
+            {
+                presenter.IsAlwaysOnTop = true;
+                // Disable after a short moment so it's not permanently on top
+                var timer = new System.Threading.Timer(_ =>
+                {
+                    this.DispatcherQueue.TryEnqueue(() =>
+                    {
+                        presenter.IsAlwaysOnTop = false;
+                    });
+                }, null, 100, System.Threading.Timeout.Infinite);
+            }
+
+            // Also use Win32 API
+            SetForegroundWindow(hWnd);
         }
 
         private void LoadProcessDetails(GroupedProcessInfo processInfo)
@@ -79,16 +100,6 @@ namespace ActivityMonitor.Views
             MemoryText.Text = $"{details.MemoryMB:F2} MB";
             ThreadsText.Text = details.ThreadCount.ToString();
             HandlesText.Text = details.HandleCount.ToString();
-        }
-
-        private void BringToFront()
-        {
-            IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
-            var windowId = Microsoft.UI.Win32Interop.GetWindowIdFromWindow(hWnd);
-            var appWindow = Microsoft.UI.Windowing.AppWindow.GetFromWindowId(windowId);
-
-            // Move to foreground
-            appWindow.MoveInZOrderAtTop();
         }
     }
 }
