@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace ActivityMonitor.ViewModels
+namespace ActivityMonitor.ViewModels.Base
 {
     // Base class for property change notification
     public abstract class ViewModelBase : INotifyPropertyChanged

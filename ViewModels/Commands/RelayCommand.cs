@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace ActivityMonitor.ViewModels
+namespace ActivityMonitor.ViewModels.Commands
 {
     // Simple ICommand implementation for UI actions
     public class RelayCommand : ICommand
