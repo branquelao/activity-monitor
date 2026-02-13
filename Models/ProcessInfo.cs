@@ -153,6 +153,36 @@ namespace ActivityMonitor.Models
 
         public double TotalDiskIO => DiskReadRate + DiskWriteRate;
 
+        // GPU usage percentage
+        private double _gpuUsage;
+        public double GpuUsage
+        {
+            get => _gpuUsage;
+            set
+            {
+                if (Math.Abs(_gpuUsage - value) > 0.01)
+                {
+                    _gpuUsage = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        // GPU Engine (which GPU engine is being used)
+        private string _gpuEngine = "";
+        public string GpuEngine
+        {
+            get => _gpuEngine;
+            set
+            {
+                if (_gpuEngine != value)
+                {
+                    _gpuEngine = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         // Indicates whether the process runs in foreground or background
         private string _executionType = "Background";
         public string ExecutionType

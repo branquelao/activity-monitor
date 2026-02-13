@@ -40,6 +40,7 @@ namespace ActivityMonitor.Services
 
         private readonly Dictionary<int, ProcessInfo> _cache = new();
         private readonly int _processorCount = Environment.ProcessorCount;
+        private readonly GpuService _gpuService = new();
 
         public List<ProcessInfo> GetProcesses(double intervalSeconds)
         {
@@ -70,6 +71,10 @@ namespace ActivityMonitor.Services
                         // Access denied or not available
                     }
 
+                    // Get GPU Usage
+                    double gpuUsage = _gpuService.GetProcessGpuUsage(p.Id);
+                    string gpuEngine = _gpuService.GetProcessGpuEngine(p.Id);
+
                     // Create cache entry if missing
                     if (!_cache.TryGetValue(p.Id, out var info))
                     {
@@ -99,6 +104,9 @@ namespace ActivityMonitor.Services
 
                     info.DiskReadRate = Math.Round((deltaRead / intervalSeconds) / (1024.0 * 1024.0), 2);
                     info.DiskWriteRate = Math.Round((deltaWrite / intervalSeconds) / (1024.0 * 1024.0), 2);
+
+                    info.GpuUsage = Math.Round(gpuUsage, 1);
+                    info.GpuEngine = gpuEngine;
 
                     info.Memory = memory;
                     info.CpuTime = cpuTime;

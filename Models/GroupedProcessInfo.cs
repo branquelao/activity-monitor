@@ -167,6 +167,40 @@ namespace ActivityMonitor.Models
             }
         }
 
+        // GPU usage percentage (summed)
+        private double _gpuUsage;
+        public double GpuUsage
+        {
+            get => _gpuUsage;
+            set
+            {
+                if (Math.Abs(_gpuUsage - value) > 0.01)
+                {
+                    _gpuUsage = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(GpuUsageDisplay));
+                }
+            }
+        }
+
+        // GPU Engine
+        private string _gpuEngine = "";
+        public string GpuEngine
+        {
+            get => _gpuEngine;
+            set
+            {
+                if (_gpuEngine != value)
+                {
+                    _gpuEngine = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        // Display formatted value
+        public string GpuUsageDisplay => $"{GpuUsage.ToString("F1", CultureInfo.InvariantCulture)}";
+
         // Icon representing the grouped process
         private BitmapImage? _icon;
         public BitmapImage? Icon

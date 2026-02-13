@@ -14,7 +14,8 @@ namespace ActivityMonitor.ViewModels
     {
         Cpu,
         Memory,
-        Disk
+        Disk,
+        Gpu
     }
 
     // Represents the current sorting state
@@ -54,6 +55,7 @@ namespace ActivityMonitor.ViewModels
         public bool IsCpuMode => CurrentMode == Viewmode.Cpu;
         public bool IsMemoryMode => CurrentMode == Viewmode.Memory;
         public bool IsDiskMode => CurrentMode == Viewmode.Disk;
+        public bool IsGpuMode => CurrentMode == Viewmode.Gpu;
 
         // Process list shown in the grid
         public ObservableCollection<GroupedProcessInfo> Processes { get; } = new();
@@ -78,6 +80,7 @@ namespace ActivityMonitor.ViewModels
                 OnPropertyChanged(nameof(IsCpuMode));
                 OnPropertyChanged(nameof(IsMemoryMode));
                 OnPropertyChanged(nameof(IsDiskMode));
+                OnPropertyChanged(nameof(IsGpuMode));
 
                 UpdateProcesses();
                 ApplySorting();
@@ -89,6 +92,7 @@ namespace ActivityMonitor.ViewModels
         public ICommand MemoryCommand { get; }
         public ICommand EndTaskCommand { get; }
         public ICommand DiskCommand { get; }
+        public ICommand GpuCommand { get; }
 
         // CPU usage state
         private double _cpuUsed;
@@ -182,6 +186,25 @@ namespace ActivityMonitor.ViewModels
         public string DiskReadTotalText => $"{DiskReadTotal:F2} MB/s";
         public string DiskWriteTotalText => $"{DiskWriteTotal:F2} MB/s";
 
+        // GPU usage state
+        private double _gpuUsedTotal;
+
+        public double GpuUsedTotal
+        {
+            get => _gpuUsedTotal;
+            set
+            {
+                if (Math.Abs(_gpuUsedTotal - value) < 0.01)
+                    return;
+
+                _gpuUsedTotal = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(GpuUsedTotalText));
+            }
+        }
+
+        public string GpuUsedTotalText => $"{GpuUsedTotal:F1}%";
+
         // Sorting state
         private string? _sortedColumn = "Process";
         private SortState _sortState = SortState.Ascending;
@@ -200,6 +223,7 @@ namespace ActivityMonitor.ViewModels
         public ObservableCollection<double> CpuHistory { get; } = new();
         public ObservableCollection<double> MemoryHistory { get; } = new();
         public ObservableCollection<double> DiskHistory { get; } = new();
+        public ObservableCollection<double> GpuHistory { get; } = new();
 
         private const int MaxHistoryPoints = 60;
 
@@ -226,6 +250,7 @@ namespace ActivityMonitor.ViewModels
             CpuCommand = new RelayCommand(() => CurrentMode = Viewmode.Cpu);
             MemoryCommand = new RelayCommand(() => CurrentMode = Viewmode.Memory);
             DiskCommand = new RelayCommand(() => CurrentMode = Viewmode.Disk);
+            GpuCommand = new RelayCommand(() => CurrentMode = Viewmode.Gpu);
 
             // Updates data every second
             _timer = new DispatcherTimer
@@ -404,7 +429,7 @@ namespace ActivityMonitor.ViewModels
                 "Type" => p => p.ExecutionType,
                 "Read (MB/s)" => p => p.DiskReadRate,   
                 "Write (MB/s)" => p => p.DiskWriteRate, 
-                "Total I/O" => p => p.TotalDiskIO,      
+                "Total I/O" => p => p.TotalDiskIO,
                 _ => p => p.Name
             };
 

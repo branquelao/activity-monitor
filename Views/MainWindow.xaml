@@ -52,11 +52,17 @@
                         Style="{Binding IsMemoryMode, Converter={StaticResource HeaderButtonStyleConverter}}"
                         Content="Memory"
                         Command="{Binding MemoryCommand}"/>
-                
+
+                <Button x:Name="GpuButton"
+                        Style="{Binding IsGpuMode, Converter={StaticResource HeaderButtonStyleConverter}}"
+                        Content="GPU"
+                        Command="{Binding GpuCommand}"/>
+
                 <Button x:Name="DiskButton"
                         Style="{Binding IsDiskMode, Converter={StaticResource HeaderButtonStyleConverter}}"
                         Content="Disk"
                         Command="{Binding DiskCommand}"/>
+
             </StackPanel>
 
             <!-- Search bar -->
@@ -228,6 +234,7 @@
                     Width="140"
                     Visibility="{x:Bind ViewModel.IsDiskMode, Mode=OneWay}">
                 </controls:DataGridTextColumn>
+
             </controls:DataGrid.Columns>
         </controls:DataGrid>
 
