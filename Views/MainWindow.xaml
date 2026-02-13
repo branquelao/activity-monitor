@@ -196,6 +196,45 @@
                     Visibility="{x:Bind ViewModel.IsMemoryMode, Mode=OneWay}">
                 </controls:DataGridTextColumn>
 
+                <!-- GPU Mode Columns -->
+                <controls:DataGridTextColumn
+                    x:Name="GpuColumn"
+                    Header="GPU (%)"
+                    Binding="{Binding GpuUsageDisplay}"
+                    Width="100"
+                    Visibility="{x:Bind ViewModel.IsGpuMode, Mode=OneWay}">
+                    <controls:DataGridTextColumn.ElementStyle>
+                        <StaticResource ResourceKey="RightAlignedCell"/>
+                    </controls:DataGridTextColumn.ElementStyle>
+                </controls:DataGridTextColumn>
+
+                <controls:DataGridTextColumn
+                    Header="GPU Engine"
+                    Binding="{Binding GpuEngine}"
+                    Width="140"
+                    Visibility="{x:Bind ViewModel.IsGpuMode, Mode=OneWay}">
+                    <controls:DataGridTextColumn.ElementStyle>
+                        <StaticResource ResourceKey="RightAlignedCell"/>
+                    </controls:DataGridTextColumn.ElementStyle>
+                </controls:DataGridTextColumn>
+
+                <controls:DataGridTextColumn
+                    Header="Threads"
+                    Binding="{Binding ThreadCount}"
+                    Width="100"
+                    Visibility="{x:Bind ViewModel.IsGpuMode, Mode=OneWay}">
+                    <controls:DataGridTextColumn.ElementStyle>
+                        <StaticResource ResourceKey="RightAlignedCell"/>
+                    </controls:DataGridTextColumn.ElementStyle>
+                </controls:DataGridTextColumn>
+
+                <controls:DataGridTextColumn
+                    Header="Type"
+                    Binding="{Binding ExecutionType}"
+                    Width="140"
+                    Visibility="{x:Bind ViewModel.IsGpuMode, Mode=OneWay}">
+                </controls:DataGridTextColumn>
+
                 <!-- Disk Mode Columns -->
                 <controls:DataGridTextColumn
                     x:Name="DiskColumn"
@@ -307,6 +346,42 @@
                 Width="450"
                 Margin="0,6,0,0"
                 Values="{Binding MemoryHistory}"
+                MaxValue="100"/>
+        </StackPanel>
+
+        <!-- GPU summary and graph -->
+        <StackPanel Grid.Row="2"
+                    Orientation="Vertical"
+                    HorizontalAlignment="Center"
+                    Spacing="8"
+                    Margin="0,8,0,12"
+                    Visibility="{x:Bind ViewModel.IsGpuMode, Mode=OneWay}">
+
+            <StackPanel Orientation="Horizontal"
+                        Spacing="24"
+                        HorizontalAlignment="Center">
+
+                <TextBlock FontSize="14">
+                    <Run Text="GPU Used: "/>
+                    <Run Text="{x:Bind ViewModel.GpuUsedTotalText, Mode=OneWay}"
+                         Foreground="{ThemeResource UsedBrush}"
+                         FontWeight="SemiBold"/>
+                </TextBlock>
+
+                <TextBlock FontSize="14">
+                    <Run Text="GPU Free: "/>
+                    <Run Text="{x:Bind ViewModel.GpuFreeText, Mode=OneWay}"
+                         Foreground="{ThemeResource FreeBrush}"
+                         FontWeight="SemiBold"/>
+                </TextBlock>
+
+            </StackPanel>
+
+            <localControls:PerformanceGraph
+                Height="120"
+                Width="450"
+                Margin="0,6,0,0"
+                Values="{Binding GpuHistory}"
                 MaxValue="100"/>
         </StackPanel>
 

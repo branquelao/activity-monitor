@@ -200,10 +200,14 @@ namespace ActivityMonitor.ViewModels
                 _gpuUsedTotal = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(GpuUsedTotalText));
+                OnPropertyChanged(nameof(GpuFree));
+                OnPropertyChanged(nameof(GpuFreeText));
             }
         }
 
+        public double GpuFree => 100 - GpuUsedTotal;  // ADD THIS
         public string GpuUsedTotalText => $"{GpuUsedTotal:F1}%";
+        public string GpuFreeText => $"{GpuFree:F1}%";  // ADD THIS
 
         // Sorting state
         private string? _sortedColumn = "Process";
@@ -282,6 +286,8 @@ namespace ActivityMonitor.ViewModels
                     HandleCount = g.Sum(p => p.HandleCount),
                     DiskReadRate = g.Sum(p => p.DiskReadRate),
                     DiskWriteRate = g.Sum(p => p.DiskWriteRate),
+                    GpuUsage = g.Sum(p => p.GpuUsage),
+                    GpuEngine = g.FirstOrDefault(p => !string.IsNullOrEmpty(p.GpuEngine))?.GpuEngine ?? "N/A",
                     Icon = g.First().Icon,
 
                     ExecutionType = g.Any(p => p.ExecutionType == "Application")
@@ -315,6 +321,8 @@ namespace ActivityMonitor.ViewModels
                     existing.HandleCount = p.HandleCount;
                     existing.DiskReadRate = p.DiskReadRate;
                     existing.DiskWriteRate = p.DiskWriteRate;
+                    existing.GpuUsage = p.GpuUsage;
+                    existing.GpuEngine = p.GpuEngine;
                     existing.Pids = p.Pids;
                 }
             }
@@ -346,6 +354,13 @@ namespace ActivityMonitor.ViewModels
 
                 // Add total I/O to history (for graph)
                 AddPoint(DiskHistory, DiskReadTotal + DiskWriteTotal);
+            }
+
+            // GPU mode update
+            if (IsGpuMode)
+            {
+                GpuUsedTotal = grouped.Sum(p => p.GpuUsage);
+                AddPoint(GpuHistory, GpuUsedTotal);
             }
 
             ApplyFilterAndSorting();
@@ -430,6 +445,8 @@ namespace ActivityMonitor.ViewModels
                 "Read (MB/s)" => p => p.DiskReadRate,   
                 "Write (MB/s)" => p => p.DiskWriteRate, 
                 "Total I/O" => p => p.TotalDiskIO,
+                "GPU (%)" => p => p.GpuUsage,
+                "GPU Engine" => p => p.GpuEngine,
                 _ => p => p.Name
             };
 
