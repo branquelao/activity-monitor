@@ -1,12 +1,12 @@
-# 🖥️ Activity Monitor (Windows)
+# Activity Monitor App
 
 A **Windows desktop application** inspired by **macOS Activity Monitor** and **Windows Task Manager**, developed in **C# with WinUI 3**.
 
 ---
 
-## ✨ Features
+## Features
 
-### 📊 CPU Monitoring
+### CPU Monitoring
 - Per-process **CPU usage (%)** (formatted with 1 decimal)
 - **CPU Time** formatted in Activity Monitor style (`mm:ss.ms`)
 - Thread count per process
@@ -25,7 +25,7 @@ A **Windows desktop application** inspired by **macOS Activity Monitor** and **W
 
 ---
 
-### 🧠 Memory Monitoring
+### Memory Monitoring
 - Per-process **memory usage with adaptive units**:
   - Displays **MB** for values below 1 GB
   - Automatically switches to **GB** for values ≥ 1 GB
@@ -40,7 +40,7 @@ A **Windows desktop application** inspired by **macOS Activity Monitor** and **W
 
 ---
 
-### 🔍 Process Search & Filtering
+### Process Search & Filtering
 - Real-time **process filtering** via search bar
 - Case-insensitive search
 - Filters processes by:
@@ -53,7 +53,7 @@ A **Windows desktop application** inspired by **macOS Activity Monitor** and **W
 
 ---
 
-### 🎯 Process Display
+### Process Display
 - **Friendly process names** extracted from executable metadata:
   - Uses `FileDescription` when available
   - Falls back to `ProductName` if needed
@@ -69,7 +69,7 @@ A **Windows desktop application** inspired by **macOS Activity Monitor** and **W
 
 ---
 
-### 🎨 User Interface
+### User Interface
 - Modern **WinUI 3** desktop UI
 - CPU and Memory modes with dynamic column switching
 - CommunityToolkit **DataGrid** with custom styling:
@@ -88,7 +88,7 @@ A **Windows desktop application** inspired by **macOS Activity Monitor** and **W
 
 ---
 
-### ⚙️ Process Control
+### Process Control
 - Process selection directly from the DataGrid
 - **End Task** functionality:
   - Terminates all instances in selected process group
@@ -98,7 +98,7 @@ A **Windows desktop application** inspired by **macOS Activity Monitor** and **W
 
 ---
 
-## 🧩 Architecture
+## Architecture
 
 - **MVVM pattern** with clear separation of concerns
 - **Models**:
@@ -124,7 +124,7 @@ A **Windows desktop application** inspired by **macOS Activity Monitor** and **W
 
 ---
 
-## 🚀 Performance & Stability
+## Performance & Stability
 
 - Real-time refresh using `DispatcherTimer` (1-second interval)
 - Incremental updates (no full collection rebuilds)
@@ -137,7 +137,7 @@ A **Windows desktop application** inspired by **macOS Activity Monitor** and **W
 
 ---
 
-## 🎨 Theming System
+## Theming System
 
 - Centralized theming using `ResourceDictionary`
 - Theme-aware brushes via `ThemeResource`
@@ -151,7 +151,7 @@ A **Windows desktop application** inspired by **macOS Activity Monitor** and **W
 
 ---
 
-## 🛠️ Technologies
+## Technologies
 
 - **C# .NET** – Core application logic
 - **WinUI 3** – Modern Windows UI framework
@@ -162,9 +162,9 @@ A **Windows desktop application** inspired by **macOS Activity Monitor** and **W
 
 ---
 
-## 📌 Project Status
+## Project Status
 
-🚧 **Actively under development**
+**Actively under development**
 
 ### Recent Updates
 - ✅ Friendly process names from executable metadata
