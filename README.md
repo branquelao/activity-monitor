@@ -1,5 +1,8 @@
 # Activity Monitor App
 
+> ⚠️ **Status: Paused**<br>
+> This project is currently paused, with no timeline for resuming development. The code is functional up to the last state documented below, but it is not receiving updates at this time.
+
 A **Windows desktop application** inspired by **macOS Activity Monitor** and **Windows Task Manager**, developed in **C# with WinUI 3**.
 
 ---
@@ -164,9 +167,11 @@ A **Windows desktop application** inspired by **macOS Activity Monitor** and **W
 
 ## Project Status
 
-**Actively under development**
+**Paused — no resumption timeline**
 
-### Recent Updates
+Development on this project has been halted. The features listed in this README reflect the last known functional state, but there is no defined schedule for further updates, fixes, or continued work.
+
+### Recent Updates (before pausing)
 - ✅ Friendly process names from executable metadata
 - ✅ Process icons with fallback for protected processes
 - ✅ Visual sorting indicators in column headers
